@@ -14,6 +14,7 @@ import { USING_PLACEHOLDER_DATA } from './data/dishPool'
 import { SoundToggle } from './components/SoundToggle'
 
 const DEFAULT_GUESS: Guess = { calories: 500, protein: 25 }
+const THINKING_MS = 1500
 
 const CALORIE_STEP = 10
 const CALORIE_NUDGE = 25
@@ -33,7 +34,7 @@ function trailingHotStreak(rounds: RoundRecord[]): number {
 }
 
 type View = 'home' | 'game' | 'results' | 'profile'
-type GamePhase = 'guessing' | 'revealed'
+type GamePhase = 'guessing' | 'thinking' | 'revealed'
 
 function App() {
   const dateKey = useMemo(() => todayKey(), [])
@@ -66,25 +67,29 @@ function App() {
   const handleSubmitGuess = () => {
     if (!currentDish) return
     primeAudio() // resume the AudioContext within this click's user-gesture
-    const score = scoreRound(currentGuess, currentDish.macros)
-    const record: RoundRecord = {
-      dishId: currentDish.id,
-      dishName: currentDish.name,
-      cuisine: currentDish.cuisine,
-      difficulty: currentDish.difficulty,
-      guess: currentGuess,
-      actual: { calories: currentDish.macros.calories, protein: currentDish.macros.protein },
-      calorieErrorPct: score.calorieErrorPct,
-      proteinErrorPct: score.proteinErrorPct,
-      total: score.total,
-    }
-    const nextRounds = [...rounds, record]
-    setRounds(nextRounds)
-    saveTodayProgress(dateKey, nextRounds)
-    setMessage(getRoundMessage(score.total))
-    // Sliders lock + animate the actual marker into place immediately —
-    // no separate "checking" screen in between.
-    setGamePhase('revealed')
+    // Sliders lock immediately (frozen at the submitted guess, no more
+    // dragging) but the actual-value marker doesn't appear until after a
+    // beat — a real pause, without hiding the sliders behind another screen.
+    setGamePhase('thinking')
+    setTimeout(() => {
+      const score = scoreRound(currentGuess, currentDish.macros)
+      const record: RoundRecord = {
+        dishId: currentDish.id,
+        dishName: currentDish.name,
+        cuisine: currentDish.cuisine,
+        difficulty: currentDish.difficulty,
+        guess: currentGuess,
+        actual: { calories: currentDish.macros.calories, protein: currentDish.macros.protein },
+        calorieErrorPct: score.calorieErrorPct,
+        proteinErrorPct: score.proteinErrorPct,
+        total: score.total,
+      }
+      const nextRounds = [...rounds, record]
+      setRounds(nextRounds)
+      saveTodayProgress(dateKey, nextRounds)
+      setMessage(getRoundMessage(score.total))
+      setGamePhase('revealed')
+    }, THINKING_MS)
   }
 
   const handleNext = () => {
@@ -101,8 +106,8 @@ function App() {
   }
 
   const revealed = gamePhase === 'revealed'
+  const locked = gamePhase !== 'guessing' // frozen during both 'thinking' and 'revealed'
   const lastScore = revealed && lastRound ? scoreRound(lastRound.guess, lastRound.actual) : null
-  const displayedGuess = revealed && lastRound ? lastRound.guess : currentGuess
   const hotStreak = trailingHotStreak(rounds)
 
   return (
@@ -154,9 +159,9 @@ function App() {
               step={CALORIE_STEP}
               nudge={CALORIE_NUDGE}
               color={CALORIE_COLOR}
-              guess={displayedGuess.calories}
+              guess={currentGuess.calories}
               onChange={(calories) => setCurrentGuess({ ...currentGuess, calories })}
-              disabled={revealed}
+              disabled={locked}
               actual={revealed ? currentDish.macros.calories : undefined}
               errorPct={lastScore?.calorieErrorPct}
             />
@@ -167,20 +172,28 @@ function App() {
               step={PROTEIN_STEP}
               nudge={PROTEIN_NUDGE}
               color={PROTEIN_COLOR}
-              guess={displayedGuess.protein}
+              guess={currentGuess.protein}
               onChange={(protein) => setCurrentGuess({ ...currentGuess, protein })}
-              disabled={revealed}
+              disabled={locked}
               actual={revealed ? currentDish.macros.protein : undefined}
               errorPct={lastScore?.proteinErrorPct}
             />
 
-            {!revealed && (
+            {gamePhase === 'guessing' && (
               <button
                 onClick={handleSubmitGuess}
                 className="w-full rounded-xl bg-emerald-500 px-4 py-4 text-lg font-bold text-black transition hover:bg-emerald-400 active:scale-[0.99]"
               >
                 Lock In Guess
               </button>
+            )}
+
+            {gamePhase === 'thinking' && (
+              <div className="flex w-full items-center justify-center gap-2 py-4 text-gray-400">
+                <span className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.3s]" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.15s]" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-gray-500" />
+              </div>
             )}
           </div>
 
