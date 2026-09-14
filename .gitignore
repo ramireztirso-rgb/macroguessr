@@ -25,3 +25,4 @@ dist-ssr
 
 # Local cursor for incremental dish-pool fetching (scripts/fetch-dishes.mjs)
 scripts/.fetch-dishes-progress.json
+scripts/.usda-candidates.json

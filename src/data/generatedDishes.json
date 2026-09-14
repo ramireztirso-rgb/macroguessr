@@ -82,7 +82,7 @@
     ],
     "recipeUrl": "https://www.foodista.com/recipe/ZXHT5BXV/lebanese-falafel",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 2
+    "difficulty": 1
   },
   {
     "id": "spoon-653008",
@@ -103,6 +103,120 @@
     "difficulty": 2
   },
   {
+    "id": "usda-2706470-full",
+    "name": "Spaghetti with Meat Sauce",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Liat_Portal_for_Foodie_Disorder_-_Spaghetti_bolognese_with_peas.jpg/960px-Liat_Portal_for_Foodie_Disorder_-_Spaghetti_bolognese_with_peas.jpg",
+    "cuisine": "Italian",
+    "macros": {
+      "calories": 589,
+      "protein": 29,
+      "carbs": 86,
+      "fat": 13
+    },
+    "explanation": "A full bowl of pasta adds up fast — most of the calories here come from the noodles themselves, not the meat sauce on top.",
+    "gotcha": "The peas are basically a rounding error — almost every calorie here is pasta and beef.",
+    "tags": [],
+    "recipeUrl": "https://fdc.nal.usda.gov/food-details/2706470/nutrients",
+    "sourceCredit": "Nutrition data via USDA FoodData Central (meat sauce) + a standard pasta portion to match the full bowl shown",
+    "servingSize": {
+      "amount": 553,
+      "unit": "g"
+    },
+    "ingredients": [
+      "Spaghetti",
+      "Beef",
+      "Tomato Sauce",
+      "Peas"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "usda-2706750-tacos3",
+    "name": "Beef Tacos (3)",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/73/001_Tacos_de_carnitas%2C_carne_asada_y_al_pastor.jpg/960px-001_Tacos_de_carnitas%2C_carne_asada_y_al_pastor.jpg",
+    "cuisine": "Mexican",
+    "macros": {
+      "calories": 565,
+      "protein": 32,
+      "carbs": 53,
+      "fat": 26
+    },
+    "explanation": "Most of the calories come from the beef, cheese, and three full tortillas — easy to undercount when you're picturing just the filling.",
+    "gotcha": "Nearly half the calories here come from fat in the beef and cheese, not the tortillas.",
+    "tags": [],
+    "recipeUrl": "https://fdc.nal.usda.gov/food-details/2706750/nutrients",
+    "sourceCredit": "Nutrition data via USDA FoodData Central (taco filling) + standard corn tortillas to match the full plate shown",
+    "servingSize": {
+      "amount": 294,
+      "unit": "g"
+    },
+    "ingredients": [
+      "Beef",
+      "Tortillas",
+      "Cheese",
+      "Tomatoes",
+      "Sauce",
+      "Lettuce"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "usda-2708811",
+    "name": "Macaroni and Cheese",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Kraft_Dinner%2C_classic_prep.jpg/960px-Kraft_Dinner%2C_classic_prep.jpg",
+    "cuisine": "American",
+    "macros": {
+      "calories": 513,
+      "protein": 20,
+      "carbs": 53,
+      "fat": 24
+    },
+    "explanation": "Most of the calories come from the cheese sauce. The protein adds up across several ingredients rather than one big source.",
+    "gotcha": "This is a real 1 cup serving — USDA measured survey data, not a recipe blog's guess.",
+    "tags": [],
+    "recipeUrl": "https://fdc.nal.usda.gov/food-details/2708811/nutrients",
+    "sourceCredit": "Nutrition data via USDA FoodData Central",
+    "servingSize": {
+      "amount": 230,
+      "unit": "g"
+    },
+    "ingredients": [
+      "Pasta",
+      "Cheese",
+      "Milk",
+      "Butter"
+    ],
+    "difficulty": 2
+  },
+  {
+    "id": "usda-2706796",
+    "name": "Kung Pao Chicken",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/2016-08-14_Kung_Pao_Chicken_dish_in_Beijing_anagoria.jpg/960px-2016-08-14_Kung_Pao_Chicken_dish_in_Beijing_anagoria.jpg",
+    "cuisine": "Chinese",
+    "macros": {
+      "calories": 209,
+      "protein": 16,
+      "carbs": 11,
+      "fat": 11
+    },
+    "explanation": "Most of the calories come from the oil in the stir-fry sauce and the peanuts. The protein adds up across the chicken and peanuts together.",
+    "gotcha": "This is a real 1 cup serving — USDA measured survey data, not a recipe blog's guess.",
+    "tags": [],
+    "recipeUrl": "https://fdc.nal.usda.gov/food-details/2706796/nutrients",
+    "sourceCredit": "Nutrition data via USDA FoodData Central",
+    "servingSize": {
+      "amount": 162,
+      "unit": "g"
+    },
+    "ingredients": [
+      "Chicken",
+      "Peanuts",
+      "Scallions",
+      "Sauce"
+    ],
+    "difficulty": 3
+  },
+  {
     "id": "spoon-732255",
     "name": "Cheesy Cowboy Quesadillas",
     "imageUrl": "https://img.spoonacular.com/recipes/732255-312x231.jpg",
@@ -121,7 +235,7 @@
     ],
     "recipeUrl": "https://www.pinkwhen.com/cheesy-cowboy-quesadillas-recipe/",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 2
+    "difficulty": 3
   },
   {
     "id": "spoon-649977",
@@ -146,6 +260,36 @@
     "difficulty": 3
   },
   {
+    "id": "usda-2708593-full",
+    "name": "Chicken Quesadilla with Guac & Sour Cream",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Chicken_Quesadilla_dish_at_Latin_Bistro_restaurant_Summit_NJ.JPG/960px-Chicken_Quesadilla_dish_at_Latin_Bistro_restaurant_Summit_NJ.JPG",
+    "cuisine": "Mexican",
+    "macros": {
+      "calories": 520,
+      "protein": 22,
+      "carbs": 44,
+      "fat": 29
+    },
+    "explanation": "The quesadilla itself is only half the story — the sour cream, guacamole, and salsa on the side add real calories most people don't count.",
+    "gotcha": "Over half the fat on this whole plate comes from the dips, not the quesadilla.",
+    "tags": [],
+    "recipeUrl": "https://fdc.nal.usda.gov/food-details/2708593/nutrients",
+    "sourceCredit": "Nutrition data via USDA FoodData Central (quesadilla) + standard dip portions to match the full plate shown",
+    "servingSize": {
+      "amount": 230,
+      "unit": "g"
+    },
+    "ingredients": [
+      "Tortillas",
+      "Chicken",
+      "Cheese",
+      "Sour Cream",
+      "Guacamole",
+      "Salsa"
+    ],
+    "difficulty": 3
+  },
+  {
     "id": "spoon-637625",
     "name": "Cheesecake with cranberries",
     "imageUrl": "https://img.spoonacular.com/recipes/637625-312x231.jpg",
@@ -166,7 +310,37 @@
     ],
     "recipeUrl": "https://www.foodista.com/recipe/CYZ254BN/cheesecake-with-cranberries",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 3
+    "difficulty": 4
+  },
+  {
+    "id": "usda-2706433-full",
+    "name": "Chicken Teriyaki with Rice & Vegetables",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Gfp-teriyaki-chicken.jpg/960px-Gfp-teriyaki-chicken.jpg",
+    "cuisine": "Japanese",
+    "macros": {
+      "calories": 476,
+      "protein": 44,
+      "carbs": 54,
+      "fat": 10
+    },
+    "explanation": "The chicken and sauce are actually lean — most of the calories here come from the cup of rice next to it.",
+    "gotcha": "Strip out the rice and this is one of the leanest dishes around — 37g of protein for just 236 calories.",
+    "tags": [],
+    "recipeUrl": "https://fdc.nal.usda.gov/food-details/2706433/nutrients",
+    "sourceCredit": "Nutrition data via USDA FoodData Central (chicken teriyaki) + standard rice and vegetable sides to match the full plate shown",
+    "servingSize": {
+      "amount": 403,
+      "unit": "g"
+    },
+    "ingredients": [
+      "Chicken",
+      "Teriyaki Sauce",
+      "Rice",
+      "Broccoli",
+      "Carrots",
+      "Asparagus"
+    ],
+    "difficulty": 4
   },
   {
     "id": "spoon-1046983",
@@ -188,7 +362,7 @@
     ],
     "recipeUrl": "https://www.pinkwhen.com/excellent-no-fail-and-easy-keto-zucchini-lasagna-recipe/",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 3
+    "difficulty": 4
   },
   {
     "id": "spoon-641908",
@@ -232,7 +406,7 @@
     ],
     "recipeUrl": "https://www.foodista.com/recipe/GPCD3SV6/great-greek-salad",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 4
+    "difficulty": 5
   },
   {
     "id": "spoon-637102",
