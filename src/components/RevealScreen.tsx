@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import type { Dish } from '../data/dish'
 import type { Guess, RoundScore } from '../lib/scoring'
+import { useCountUp } from '../lib/useCountUp'
 
 function StatCompare({
   label,
@@ -53,11 +55,29 @@ export function RevealScreen({
   isLastRound: boolean
   onNext: () => void
 }) {
+  const animatedPoints = useCountUp(score.total, 700)
+  const landed = animatedPoints >= score.total
+  const [popped, setPopped] = useState(false)
+
+  useEffect(() => {
+    if (landed) {
+      setPopped(true)
+      const t = setTimeout(() => setPopped(false), 220)
+      return () => clearTimeout(t)
+    }
+  }, [landed])
+
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="rounded-xl bg-gray-800/60 p-4 text-center">
         <p className="text-sm text-gray-400">You were {Math.round(score.combinedErrorPct * 100)}% off</p>
-        <p className="mt-1 text-4xl font-black text-emerald-400">+{score.total} pts</p>
+        <p
+          className={`mt-1 text-4xl font-black tabular-nums text-emerald-400 transition-transform duration-200 ${
+            popped ? 'scale-110' : 'scale-100'
+          }`}
+        >
+          +{animatedPoints} pts
+        </p>
         <p className="mt-2 text-sm font-medium text-gray-300">{message}</p>
       </div>
 
