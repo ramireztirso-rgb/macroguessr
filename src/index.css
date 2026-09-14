@@ -33,11 +33,14 @@ body {
   animation: reveal-fade-in 0.4s ease-out;
 }
 
-/* Bigger track + thumb for a much easier touch target than the browser default. */
+/* Matches the reveal screen's guess-vs-actual track exactly (h-2 track,
+   16px marker) so the guessing slider and the reveal visualization read as
+   the same slider, just at different moments. The marker is smaller than
+   the previous version — the +/- buttons are the precision fallback. */
 input[type='range'].guess-slider {
   -webkit-appearance: none;
   appearance: none;
-  height: 12px;
+  height: 8px;
   border-radius: 999px;
   background: #374151;
   touch-action: pan-y;
@@ -46,27 +49,27 @@ input[type='range'].guess-slider {
 input[type='range'].guess-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 30px;
-  height: 30px;
+  width: 16px;
+  height: 16px;
   border-radius: 999px;
   background: var(--slider-thumb-color, #34d399);
-  border: 3px solid #0b0c10;
+  border: 2px solid #0b0c10;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
 
 input[type='range'].guess-slider::-moz-range-thumb {
-  width: 30px;
-  height: 30px;
+  width: 16px;
+  height: 16px;
   border-radius: 999px;
   background: var(--slider-thumb-color, #34d399);
-  border: 3px solid #0b0c10;
+  border: 2px solid #0b0c10;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
 
 input[type='range'].guess-slider::-moz-range-track {
-  height: 12px;
+  height: 8px;
   border-radius: 999px;
   background: #374151;
 }
