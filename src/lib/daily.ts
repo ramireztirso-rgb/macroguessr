@@ -54,7 +54,7 @@ const tierOrderCache = new Map<Difficulty, Dish[]>()
 function tierOrder(tier: Difficulty): Dish[] {
   if (!tierOrderCache.has(tier)) {
     const poolForTier = DISH_POOL.filter((d) => d.difficulty === tier)
-    const seed = hashStringToSeed(`macroguess-tier-${tier}-v34`)
+    const seed = hashStringToSeed(`macroguess-tier-${tier}-v15`)
     tierOrderCache.set(tier, seededShuffle(poolForTier, seed))
   }
   return tierOrderCache.get(tier)!

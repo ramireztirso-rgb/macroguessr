@@ -82,7 +82,7 @@
     ],
     "recipeUrl": "https://www.foodista.com/recipe/ZXHT5BXV/lebanese-falafel",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 1
+    "difficulty": 2
   },
   {
     "id": "spoon-653008",
@@ -99,27 +99,6 @@
     "gotcha": "Servings like this (1) can pack more calories than they look.",
     "tags": [],
     "recipeUrl": "https://www.foodista.com/recipe/77PG3GGF/neoguri-spicy-seafood-ramen",
-    "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 2
-  },
-  {
-    "id": "spoon-715595",
-    "name": "Cheesiest Bowtie Mac and Cheese",
-    "imageUrl": "https://img.spoonacular.com/recipes/715595-312x231.jpg",
-    "cuisine": "American",
-    "macros": {
-      "calories": 780,
-      "protein": 28,
-      "carbs": 86,
-      "fat": 35
-    },
-    "explanation": "Most of the calories come from the Extra Sharp Cheddar Cheese, Cream, Butter. The protein adds up across several ingredients.",
-    "gotcha": "Servings like this (4) can pack more calories than they look.",
-    "tags": [
-      "hidden-calories",
-      "restaurant-portion"
-    ],
-    "recipeUrl": "https://www.pinkwhen.com/mac-and-cheese-recipe/",
     "sourceCredit": "Recipe via Spoonacular",
     "difficulty": 2
   },
@@ -167,28 +146,6 @@
     "difficulty": 3
   },
   {
-    "id": "spoon-653835",
-    "name": "Orange Chicken With Brown Rice (Gluten-Free)",
-    "imageUrl": "https://img.spoonacular.com/recipes/653835-312x231.jpg",
-    "cuisine": "Chinese",
-    "macros": {
-      "calories": 897,
-      "protein": 43,
-      "carbs": 58,
-      "fat": 56
-    },
-    "explanation": "Most of the calories come from the Heavy Cream, Honey, Olive Oil. Protein here mostly comes from the Chicken Drumsticks.",
-    "gotcha": "Over half the calories here come from fat alone.",
-    "tags": [
-      "hidden-calories",
-      "restaurant-portion",
-      "high-fat"
-    ],
-    "recipeUrl": "https://www.foodista.com/recipe/L7577Z86/orange-chicken-with-brown-rice-gluten-free",
-    "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 3
-  },
-  {
     "id": "spoon-637625",
     "name": "Cheesecake with cranberries",
     "imageUrl": "https://img.spoonacular.com/recipes/637625-312x231.jpg",
@@ -212,26 +169,6 @@
     "difficulty": 3
   },
   {
-    "id": "spoon-648506",
-    "name": "Japanese Sushi",
-    "imageUrl": "https://img.spoonacular.com/recipes/648506-312x231.jpg",
-    "cuisine": "Japanese",
-    "macros": {
-      "calories": 571,
-      "protein": 70,
-      "carbs": 38,
-      "fat": 13
-    },
-    "explanation": "Most of the calories come from the carbs and fat in this dish. Protein here mostly comes from the Tuna.",
-    "gotcha": "Surprisingly protein-dense: 70g of protein for just 571 calories.",
-    "tags": [
-      "high-protein"
-    ],
-    "recipeUrl": "https://www.foodista.com/recipe/ZHC2WBHW/japanese-sushi",
-    "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 4
-  },
-  {
     "id": "spoon-1046983",
     "name": "Keto Zucchini Lasagna",
     "imageUrl": "https://img.spoonacular.com/recipes/1046983-312x231.jpg",
@@ -251,7 +188,7 @@
     ],
     "recipeUrl": "https://www.pinkwhen.com/excellent-no-fail-and-easy-keto-zucchini-lasagna-recipe/",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 4
+    "difficulty": 3
   },
   {
     "id": "spoon-641908",
@@ -295,7 +232,7 @@
     ],
     "recipeUrl": "https://www.foodista.com/recipe/GPCD3SV6/great-greek-salad",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 5
+    "difficulty": 4
   },
   {
     "id": "spoon-637102",
