@@ -25,53 +25,96 @@ if (!apiKey) {
 // One search per query, each hand-picked to cover the requested cuisines
 // and "gotcha" archetypes (healthy-looking-but-not, indulgent-but-honest,
 // high-protein-surprise, huge-portion, etc.) rather than a blind random pull.
+// Weighted toward bigger/combo/platter-style dishes and away from the
+// wrap/sandwich skew the first pass ended up with.
 const QUERIES = [
-  { q: 'cheeseburger', cuisine: 'American' },
-  { q: 'buffalo wings', cuisine: 'American' },
+  // American — bigger portions, less "just a burger"
+  { q: 'bacon cheeseburger meal with fries', cuisine: 'American' },
+  { q: 'buffalo wings platter', cuisine: 'American' },
   { q: 'mac and cheese', cuisine: 'American' },
-  { q: 'philly cheesesteak', cuisine: 'American' },
+  { q: 'loaded baked potato', cuisine: 'American' },
+  { q: 'fried chicken dinner plate', cuisine: 'American' },
+  { q: 'bbq ribs platter', cuisine: 'American' },
+  { q: 'chili cheese fries', cuisine: 'American' },
+  { q: 'meatloaf dinner', cuisine: 'American' },
   { q: 'cobb salad', cuisine: 'American' },
+  { q: 'pot roast dinner', cuisine: 'American' },
+  // Mexican
   { q: 'chicken burrito bowl', cuisine: 'Mexican' },
-  { q: 'carne asada tacos', cuisine: 'Mexican' },
-  { q: 'nachos', cuisine: 'Mexican' },
-  { q: 'chicken quesadilla', cuisine: 'Mexican' },
+  { q: 'carne asada tacos plate', cuisine: 'Mexican' },
+  { q: 'loaded nachos platter', cuisine: 'Mexican' },
+  { q: 'enchiladas plate', cuisine: 'Mexican' },
+  { q: 'chimichanga', cuisine: 'Mexican' },
+  { q: 'fajitas platter', cuisine: 'Mexican' },
+  // Japanese
   { q: 'chicken katsu curry', cuisine: 'Japanese' },
-  { q: 'salmon sushi roll', cuisine: 'Japanese' },
-  { q: 'ramen', cuisine: 'Japanese' },
+  { q: 'sushi platter', cuisine: 'Japanese' },
+  { q: 'tonkotsu ramen', cuisine: 'Japanese' },
   { q: 'tempura udon', cuisine: 'Japanese' },
+  { q: 'teriyaki chicken bowl', cuisine: 'Japanese' },
+  { q: 'tonkatsu', cuisine: 'Japanese' },
+  // Korean
   { q: 'bibimbap', cuisine: 'Korean' },
   { q: 'korean fried chicken', cuisine: 'Korean' },
-  { q: 'bulgogi', cuisine: 'Korean' },
+  { q: 'bulgogi bowl', cuisine: 'Korean' },
+  { q: 'japchae', cuisine: 'Korean' },
+  // Chinese
   { q: 'kung pao chicken', cuisine: 'Chinese' },
   { q: 'fried rice', cuisine: 'Chinese' },
   { q: 'orange chicken', cuisine: 'Chinese' },
+  { q: 'beef and broccoli', cuisine: 'Chinese' },
+  { q: "general tso's chicken", cuisine: 'Chinese' },
+  // Thai
   { q: 'pad thai', cuisine: 'Thai' },
-  { q: 'green curry', cuisine: 'Thai' },
+  { q: 'thai green curry', cuisine: 'Thai' },
   { q: 'thai basil chicken', cuisine: 'Thai' },
+  { q: 'massaman curry', cuisine: 'Thai' },
+  // Indian
   { q: 'butter chicken', cuisine: 'Indian' },
   { q: 'chicken tikka masala', cuisine: 'Indian' },
   { q: 'saag paneer', cuisine: 'Indian' },
+  { q: 'chicken biryani', cuisine: 'Indian' },
+  // Italian
   { q: 'fettuccine alfredo', cuisine: 'Italian' },
-  { q: 'margherita pizza', cuisine: 'Italian' },
+  { q: 'whole margherita pizza', cuisine: 'Italian' },
   { q: 'lasagna', cuisine: 'Italian' },
   { q: 'tiramisu', cuisine: 'Italian' },
-  { q: 'falafel wrap', cuisine: 'Mediterranean' },
-  { q: 'chicken gyro', cuisine: 'Mediterranean' },
+  { q: 'chicken carbonara', cuisine: 'Italian' },
+  { q: 'chicken parmesan', cuisine: 'Italian' },
+  // Mediterranean
+  { q: 'chicken shawarma plate', cuisine: 'Mediterranean' },
   { q: 'greek salad', cuisine: 'Mediterranean' },
   { q: 'hummus platter', cuisine: 'Mediterranean' },
+  { q: 'moussaka', cuisine: 'Mediterranean' },
+  { q: 'baklava', cuisine: 'Mediterranean' },
+  // Desserts
   { q: 'cheesecake', cuisine: 'Dessert' },
-  { q: 'chocolate lava cake', cuisine: 'Dessert' },
+  { q: 'chocolate lava cake with ice cream', cuisine: 'Dessert' },
   { q: 'donut', cuisine: 'Dessert' },
-  { q: 'brownie', cuisine: 'Dessert' },
+  { q: 'brownie sundae', cuisine: 'Dessert' },
+  { q: 'giant cinnamon roll', cuisine: 'Dessert' },
+  { q: 'banana split', cuisine: 'Dessert' },
+  { q: 'apple pie a la mode', cuisine: 'Dessert' },
+  // Breakfast
   { q: 'acai bowl', cuisine: 'Breakfast' },
   { q: 'avocado toast', cuisine: 'Breakfast' },
-  { q: 'pancakes', cuisine: 'Breakfast' },
+  { q: 'pancake stack', cuisine: 'Breakfast' },
   { q: 'breakfast burrito', cuisine: 'Breakfast' },
-  { q: 'granola parfait', cuisine: 'Breakfast' },
+  { q: 'full english breakfast', cuisine: 'Breakfast' },
+  { q: 'eggs benedict', cuisine: 'Breakfast' },
+  { q: 'french toast', cuisine: 'Breakfast' },
+  // Snacks / drinks
   { q: 'smoothie bowl', cuisine: 'Snack' },
   { q: 'protein shake', cuisine: 'Snack' },
   { q: 'caramel frappuccino', cuisine: 'Drink' },
-  { q: 'trail mix', cuisine: 'Snack' },
+  { q: 'boba milk tea', cuisine: 'Drink' },
+  { q: 'large milkshake', cuisine: 'Drink' },
+  { q: 'loaded popcorn', cuisine: 'Snack' },
+  // Explicit "huge portion" gotcha dishes
+  { q: 'prime rib dinner', cuisine: 'American' },
+  { q: 'surf and turf dinner', cuisine: 'American' },
+  { q: 'korean bbq platter', cuisine: 'Korean' },
+  { q: 'family size lasagna', cuisine: 'Italian' },
 ]
 
 const NUTRIENT_MAP = { calories: 'Calories', protein: 'Protein', carbs: 'Carbohydrates', fat: 'Fat' }
@@ -160,6 +203,15 @@ function buildExplanation(recipe, macros) {
       : `This dish is fairly light on protein.`
 
   return `${calorieLine} ${proteinLine}`
+}
+
+function extractTopIngredients(recipe, max = 7) {
+  const ingredients = recipe.nutrition?.ingredients ?? []
+  return ingredients
+    .filter((i) => i.name)
+    .map((i) => titleCase(i.name))
+    .filter((name, i, arr) => arr.indexOf(name) === i) // dedupe
+    .slice(0, max)
 }
 
 function buildGotcha({ recipe, macros, looksHealthy, looksIndulgent, proteinDensity, fatPct }) {
@@ -293,6 +345,24 @@ async function main() {
       if ((recipe.servings ?? 1) >= 4) tags.push('restaurant-portion')
       if (fatPct >= 50) tags.push('high-fat')
 
+      // Protein supplying more than ~55% of total calories is unusual for a
+      // whole dish (vs. a pure meat serving) and is often a bad per-serving
+      // calculation from the source blog — flag it for a human to spot-check
+      // rather than silently trusting or auto-rejecting it.
+      const proteinCalorieShare = (macros.protein * 4) / Math.max(macros.calories, 1)
+      if (proteinCalorieShare > 0.55) {
+        console.warn(
+          `  ⚠ "${recipe.title}" has ${macros.protein}g protein / ${macros.calories}kcal ` +
+            `(${Math.round(proteinCalorieShare * 100)}% of calories from protein) — double-check this looks right.`,
+        )
+      }
+
+      const weightPerServing = recipe.nutrition?.weightPerServing
+      const servingSize =
+        weightPerServing?.amount && weightPerServing?.unit
+          ? { amount: Math.round(weightPerServing.amount), unit: weightPerServing.unit }
+          : undefined
+
       return {
         id: `spoon-${recipe.id}`,
         name: cleanName(recipe.title),
@@ -304,6 +374,8 @@ async function main() {
         tags,
         recipeUrl: recipe.sourceUrl || `https://spoonacular.com/recipes/${recipe.id}`,
         sourceCredit: 'Recipe via Spoonacular',
+        servingSize,
+        ingredients: extractTopIngredients(recipe),
       }
     })
     .filter(Boolean)

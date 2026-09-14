@@ -23,6 +23,10 @@ export type Dish = {
   tags: string[]
   recipeUrl?: string
   sourceCredit?: string
+  /** Real serving weight, when known — shown during guessing to give a size reference. */
+  servingSize?: { amount: number; unit: string }
+  /** Real ingredient list, when known — shown on the reveal screen (post-guess, doesn't spoil the numbers). */
+  ingredients?: string[]
 }
 
 // Small hand-written fallback pool (one per difficulty tier) used only until

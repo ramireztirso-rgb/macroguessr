@@ -63,6 +63,14 @@ export function scoreEmoji(roundTotal: number): string {
   return '🟥'
 }
 
+/** Tailwind text-color class matching the same tiers as scoreEmoji, for the reveal screen's score display. */
+export function scoreColorClass(roundTotal: number): string {
+  if (roundTotal >= 85) return 'text-emerald-400'
+  if (roundTotal >= 65) return 'text-yellow-400'
+  if (roundTotal >= 40) return 'text-orange-400'
+  return 'text-red-400'
+}
+
 const ENCOURAGEMENT_LOW = [
   "Not your round — the dish got you. Happens to everyone.",
   "Way off, but hey, now you know for next time.",

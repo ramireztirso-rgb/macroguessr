@@ -340,27 +340,5 @@
     "recipeUrl": "https://www.foodista.com/recipe/CD7ZB5SK/philly-cheesesteak-grilled-wraps",
     "sourceCredit": "Recipe via Spoonacular",
     "difficulty": 4
-  },
-  {
-    "id": "spoon-645646",
-    "name": "Grilled Chicken Gyros With Tzatziki",
-    "imageUrl": "https://img.spoonacular.com/recipes/645646-312x231.jpg",
-    "cuisine": "Mediterranean",
-    "macros": {
-      "calories": 778,
-      "protein": 82,
-      "carbs": 61,
-      "fat": 22
-    },
-    "explanation": "Most of the calories come from the Extra Virgin Olive Oil. Protein here mostly comes from the Greek Yogurt.",
-    "gotcha": "This \"healthy\" dish clocks in at 778 calories — more than a lot of indulgent options.",
-    "tags": [
-      "deceptive-healthy",
-      "hidden-calories",
-      "high-protein"
-    ],
-    "recipeUrl": "https://www.foodista.com/recipe/8KQH5NQ3/grilled-chicken-gyros-with-tzatziki",
-    "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 5
   }
 ]

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Dish } from '../data/dish'
-import { GOOD_ROUND_THRESHOLD, type Guess, type RoundScore } from '../lib/scoring'
+import { GOOD_ROUND_THRESHOLD, scoreColorClass, type Guess, type RoundScore } from '../lib/scoring'
 import { useCountUp } from '../lib/useCountUp'
 import { playRoundResultSound } from '../lib/sound'
 import { hapticBad, hapticGood, hapticStreak } from '../lib/haptics'
@@ -9,9 +9,10 @@ const EXCELLENT_THRESHOLD = 85
 
 // Staged reveal, GeoGuessr/Worldle-style: show the guess-vs-actual numbers
 // first, THEN converge the score (with sound), THEN the explanation — instead
-// of dumping everything on screen at once.
-const NUMBERS_DELAY_MS = 550
-const SCORE_TO_EXPLANATION_MS = 900
+// of dumping everything on screen at once. Deliberately slow — the pause is
+// what makes the reveal feel suspenseful instead of instant.
+const NUMBERS_DELAY_MS = 1400
+const SCORE_TO_EXPLANATION_MS = 1100
 
 type Stage = 'numbers' | 'score' | 'full'
 
@@ -70,7 +71,7 @@ export function RevealScreen({
   onNext: () => void
 }) {
   const [stage, setStage] = useState<Stage>('numbers')
-  const animatedPoints = useCountUp(stage === 'numbers' ? 0 : score.total, 700)
+  const animatedPoints = useCountUp(stage === 'numbers' ? 0 : score.total, 900)
   const landed = stage !== 'numbers' && animatedPoints >= score.total
   const [popped, setPopped] = useState(false)
   const isExcellent = score.total >= EXCELLENT_THRESHOLD
@@ -109,7 +110,14 @@ export function RevealScreen({
         }`}
       >
         {stage === 'numbers' ? (
-          <p className="text-sm text-gray-500">Comparing your guess...</p>
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-sm text-gray-500">Comparing your guess...</p>
+            <div className="flex gap-1.5">
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-600 [animation-delay:-0.3s]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-600 [animation-delay:-0.15s]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-600" />
+            </div>
+          </div>
         ) : (
           <>
             {onFire && (
@@ -119,7 +127,7 @@ export function RevealScreen({
             )}
             <p className="text-sm text-gray-400">You were {Math.round(score.combinedErrorPct * 100)}% off</p>
             <p
-              className={`mt-1 text-4xl font-black tabular-nums text-emerald-400 transition-transform duration-200 ${
+              className={`mt-1 text-4xl font-black tabular-nums transition-transform duration-200 ${scoreColorClass(score.total)} ${
                 popped ? 'scale-110' : 'scale-100'
               }`}
             >
@@ -155,6 +163,18 @@ export function RevealScreen({
               <span>💡</span>
               <span>{dish.gotcha}</span>
             </p>
+            {dish.ingredients && dish.ingredients.length > 0 && (
+              <div className="mt-3 border-t border-gray-700 pt-3">
+                <p className="text-xs font-medium text-gray-500">What's in it</p>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {dish.ingredients.map((ing) => (
+                    <span key={ing} className="rounded-full bg-gray-700/60 px-2 py-0.5 text-xs text-gray-300">
+                      {ing}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <button
