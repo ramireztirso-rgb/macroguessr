@@ -385,9 +385,17 @@ async function main() {
 
   // Rank the WHOLE pool by trickiness together and split into 5 tiers, so
   // difficulty stays consistent as the pool grows across multiple runs.
+  // Distributed as evenly as possible (Math.ceil sizing left tier 5 with
+  // zero dishes whenever the pool wasn't a clean multiple of 5).
   const ranked = [...merged].sort((a, b) => trickinessScoreFromDish(a) - trickinessScoreFromDish(b))
-  const tierSize = Math.ceil(ranked.length / 5)
-  const dishes = ranked.map((d, i) => ({ ...d, difficulty: Math.min(5, Math.floor(i / tierSize) + 1) }))
+  const base = Math.floor(ranked.length / 5)
+  const remainder = ranked.length % 5
+  const dishes = []
+  let cursor = 0
+  for (let tier = 1; tier <= 5; tier++) {
+    const size = base + (tier <= remainder ? 1 : 0)
+    for (let j = 0; j < size; j++) dishes.push({ ...ranked[cursor++], difficulty: tier })
+  }
 
   if (dishes.length === 0) {
     throw new Error('No usable dishes yet — check the API key and try again.')

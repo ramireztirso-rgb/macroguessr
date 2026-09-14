@@ -164,7 +164,7 @@
     ],
     "recipeUrl": "https://www.foodista.com/recipe/MQ6FSP5J/lick-your-plate-amazing-tiramisu",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 2
+    "difficulty": 3
   },
   {
     "id": "spoon-653835",
@@ -229,7 +229,7 @@
     ],
     "recipeUrl": "https://www.foodista.com/recipe/ZHC2WBHW/japanese-sushi",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 3
+    "difficulty": 4
   },
   {
     "id": "spoon-1046983",
@@ -251,7 +251,7 @@
     ],
     "recipeUrl": "https://www.pinkwhen.com/excellent-no-fail-and-easy-keto-zucchini-lasagna-recipe/",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 3
+    "difficulty": 4
   },
   {
     "id": "spoon-641908",
@@ -295,7 +295,7 @@
     ],
     "recipeUrl": "https://www.foodista.com/recipe/GPCD3SV6/great-greek-salad",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 4
+    "difficulty": 5
   },
   {
     "id": "spoon-637102",
@@ -317,7 +317,7 @@
     ],
     "recipeUrl": "https://www.foodista.com/recipe/ZKCX6VHS/caribbean-cobb-salad-with-fire-roasted-pineapple-vinaigrette",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 4
+    "difficulty": 5
   },
   {
     "id": "spoon-655890",
@@ -339,6 +339,6 @@
     ],
     "recipeUrl": "https://www.foodista.com/recipe/CD7ZB5SK/philly-cheesesteak-grilled-wraps",
     "sourceCredit": "Recipe via Spoonacular",
-    "difficulty": 4
+    "difficulty": 5
   }
 ]
