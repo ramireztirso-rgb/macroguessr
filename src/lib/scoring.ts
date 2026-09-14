@@ -91,6 +91,10 @@ const ENCOURAGEMENT_LOW = [
 ]
 const ENCOURAGEMENT_MID = [
   "Mid but in a good way. Keep locking in.",
+  "Aight that'll work.",
+  "Not the worst read out there.",
+  "You're circling it, keep going.",
+  "Respectable-ish. Lock in a lil more.",
 ]
 const ENCOURAGEMENT_HIGH = [
   "Yessir. You're HIM for that one. 🐐",
@@ -100,8 +104,8 @@ const ENCOURAGEMENT_HIGH = [
   "Bro really said 'I know food' and proved it.",
   "Okay chef, we see you.",
   "You really are that guy.",
-  "Big dog behavior right there.",
-  "You're built different for that one.",
+  "Aight big dog we see you.",
+  "This dude built different.",
 ]
 
 // Escalating roasts for consecutive bad rounds — a "cold streak" mirroring
