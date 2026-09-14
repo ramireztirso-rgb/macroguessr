@@ -10,18 +10,23 @@ const CURVE: [errorPct: number, points: number][] = [
   [1, 0],
 ]
 
+// Soft floor, GeoGuessr-style — a genuinely terrible guess still isn't a
+// punishing hard zero. Only pulls up guesses past ~35% error; anything
+// closer than that is untouched by this floor.
+const MIN_POINTS_FLOOR = 30
+
 export function pointsForError(errorPct: number): number {
   const e = Math.abs(errorPct)
-  if (e >= 1) return 0
+  if (e >= 1) return MIN_POINTS_FLOOR
   for (let i = 0; i < CURVE.length - 1; i++) {
     const [e0, p0] = CURVE[i]
     const [e1, p1] = CURVE[i + 1]
     if (e >= e0 && e <= e1) {
       const t = (e - e0) / (e1 - e0)
-      return Math.round(p0 + (p1 - p0) * t)
+      return Math.max(MIN_POINTS_FLOOR, Math.round(p0 + (p1 - p0) * t))
     }
   }
-  return 0
+  return MIN_POINTS_FLOOR
 }
 
 function percentError(guess: number, actual: number): number {
