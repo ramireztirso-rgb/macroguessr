@@ -5,7 +5,7 @@ import { useCountUp } from '../lib/useCountUp'
 import { playRoundResultSound } from '../lib/sound'
 import { hapticBad, hapticGood, hapticStreak } from '../lib/haptics'
 
-const EXCELLENT_THRESHOLD = 85
+const EXCELLENT_THRESHOLD = 80 // matches the green tier in scoring.ts
 
 // The sliders themselves animate the actual-value marker into place
 // (~1400ms) as soon as you submit, so the score converges right as that

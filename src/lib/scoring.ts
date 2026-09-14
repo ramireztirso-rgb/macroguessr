@@ -70,17 +70,15 @@ export const ROUNDS_PER_DAY = 5
 export const MAX_DAY_SCORE = MAX_ROUND_SCORE * ROUNDS_PER_DAY
 
 export function scoreEmoji(roundTotal: number): string {
-  if (roundTotal >= 85) return '🟩'
-  if (roundTotal >= 65) return '🟨'
-  if (roundTotal >= 40) return '🟧'
+  if (roundTotal >= 80) return '🟩'
+  if (roundTotal > 50) return '🟨'
   return '🟥'
 }
 
 /** Tailwind text-color class matching the same tiers as scoreEmoji, for the reveal screen's score display. */
 export function scoreColorClass(roundTotal: number): string {
-  if (roundTotal >= 85) return 'text-emerald-400'
-  if (roundTotal >= 65) return 'text-yellow-400'
-  if (roundTotal >= 40) return 'text-orange-400'
+  if (roundTotal >= 80) return 'text-emerald-400'
+  if (roundTotal > 50) return 'text-yellow-400'
   return 'text-red-400'
 }
 
