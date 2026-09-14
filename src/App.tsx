@@ -9,7 +9,9 @@ import { ProfileScreen } from './components/ProfileScreen'
 import { getDailyDishes, todayKey } from './lib/daily'
 import { getRoundMessage, scoreRound, type Guess } from './lib/scoring'
 import { loadStats, loadTodayProgress, recordDayComplete, saveTodayProgress, type RoundRecord } from './lib/storage'
+import { primeAudio } from './lib/sound'
 import { USING_PLACEHOLDER_DATA } from './data/dishPool'
+import { SoundToggle } from './components/SoundToggle'
 
 const DEFAULT_GUESS: Guess = { calories: 500, protein: 25 }
 const SUBMIT_ANTICIPATION_MS = 550
@@ -47,6 +49,7 @@ function App() {
 
   const handleSubmitGuess = () => {
     if (!currentDish) return
+    primeAudio() // resume the AudioContext within this click's user-gesture, before the async reveal
     setGamePhase('submitting')
     setTimeout(() => {
       const score = scoreRound(currentGuess, currentDish.macros)
@@ -88,6 +91,7 @@ function App() {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col gap-6 px-4 py-6">
+      <SoundToggle />
       {view !== 'game' && (
         <header className="flex items-center justify-between">
           <button onClick={() => setView('home')} className="text-lg font-black tracking-tight text-white">

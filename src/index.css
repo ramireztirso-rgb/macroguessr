@@ -17,3 +17,18 @@ body {
   background: #0b0c10;
   color: #f3f4f6;
 }
+
+@keyframes reveal-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal-fade-in {
+  animation: reveal-fade-in 0.4s ease-out;
+}

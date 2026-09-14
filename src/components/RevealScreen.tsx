@@ -2,6 +2,15 @@ import { useEffect, useState } from 'react'
 import type { Dish } from '../data/dish'
 import type { Guess, RoundScore } from '../lib/scoring'
 import { useCountUp } from '../lib/useCountUp'
+import { playRoundResultSound } from '../lib/sound'
+
+// Staged reveal, GeoGuessr/Worldle-style: show the guess-vs-actual numbers
+// first, THEN converge the score (with sound), THEN the explanation — instead
+// of dumping everything on screen at once.
+const NUMBERS_DELAY_MS = 550
+const SCORE_TO_EXPLANATION_MS = 900
+
+type Stage = 'numbers' | 'score' | 'full'
 
 function StatCompare({
   label,
@@ -55,9 +64,24 @@ export function RevealScreen({
   isLastRound: boolean
   onNext: () => void
 }) {
-  const animatedPoints = useCountUp(score.total, 700)
-  const landed = animatedPoints >= score.total
+  const [stage, setStage] = useState<Stage>('numbers')
+  const animatedPoints = useCountUp(stage === 'numbers' ? 0 : score.total, 700)
+  const landed = stage !== 'numbers' && animatedPoints >= score.total
   const [popped, setPopped] = useState(false)
+
+  useEffect(() => {
+    setStage('numbers')
+    const toScore = setTimeout(() => {
+      setStage('score')
+      playRoundResultSound(score.total)
+    }, NUMBERS_DELAY_MS)
+    const toFull = setTimeout(() => setStage('full'), NUMBERS_DELAY_MS + SCORE_TO_EXPLANATION_MS)
+    return () => {
+      clearTimeout(toScore)
+      clearTimeout(toFull)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dish.id])
 
   useEffect(() => {
     if (landed) {
@@ -70,15 +94,21 @@ export function RevealScreen({
   return (
     <div className="flex w-full flex-col gap-4">
       <div className="rounded-xl bg-gray-800/60 p-4 text-center">
-        <p className="text-sm text-gray-400">You were {Math.round(score.combinedErrorPct * 100)}% off</p>
-        <p
-          className={`mt-1 text-4xl font-black tabular-nums text-emerald-400 transition-transform duration-200 ${
-            popped ? 'scale-110' : 'scale-100'
-          }`}
-        >
-          +{animatedPoints} pts
-        </p>
-        <p className="mt-2 text-sm font-medium text-gray-300">{message}</p>
+        {stage === 'numbers' ? (
+          <p className="text-sm text-gray-500">Comparing your guess...</p>
+        ) : (
+          <>
+            <p className="text-sm text-gray-400">You were {Math.round(score.combinedErrorPct * 100)}% off</p>
+            <p
+              className={`mt-1 text-4xl font-black tabular-nums text-emerald-400 transition-transform duration-200 ${
+                popped ? 'scale-110' : 'scale-100'
+              }`}
+            >
+              +{animatedPoints} pts
+            </p>
+            <p className="mt-2 text-sm font-medium text-gray-300">{message}</p>
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -98,20 +128,24 @@ export function RevealScreen({
         />
       </div>
 
-      <div className="rounded-xl border border-gray-700 bg-gray-800/40 p-4">
-        <p className="text-sm text-gray-300">{dish.explanation}</p>
-        <p className="mt-2 flex items-start gap-2 text-sm font-medium text-amber-300">
-          <span>💡</span>
-          <span>{dish.gotcha}</span>
-        </p>
-      </div>
+      {stage === 'full' && (
+        <div className="reveal-fade-in flex flex-col gap-4">
+          <div className="rounded-xl border border-gray-700 bg-gray-800/40 p-4">
+            <p className="text-sm text-gray-300">{dish.explanation}</p>
+            <p className="mt-2 flex items-start gap-2 text-sm font-medium text-amber-300">
+              <span>💡</span>
+              <span>{dish.gotcha}</span>
+            </p>
+          </div>
 
-      <button
-        onClick={onNext}
-        className="w-full rounded-xl bg-white px-4 py-3 font-bold text-black transition hover:bg-gray-200"
-      >
-        {isLastRound ? 'See Results' : 'Next Dish'}
-      </button>
+          <button
+            onClick={onNext}
+            className="w-full rounded-xl bg-white px-4 py-3 font-bold text-black transition hover:bg-gray-200"
+          >
+            {isLastRound ? 'See Results' : 'Next Dish'}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
