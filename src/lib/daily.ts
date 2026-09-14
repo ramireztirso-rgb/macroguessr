@@ -1,8 +1,8 @@
-import { MEAL_POOL, type Meal } from '../data/meals'
+import { DISH_POOL } from '../data/dishPool'
+import type { Dish, Difficulty } from '../data/dish'
 
-const MEALS_PER_DAY = 5
+const DIFFICULTY_TIERS: Difficulty[] = [1, 2, 3, 4, 5]
 
-/** Small deterministic PRNG (mulberry32) so a given seed always produces the same sequence. */
 function mulberry32(seed: number) {
   let a = seed
   return () => {
@@ -33,7 +33,6 @@ function seededShuffle<T>(items: T[], seed: number): T[] {
   return arr
 }
 
-/** Local calendar date as YYYY-MM-DD, so the puzzle rolls over at local midnight. */
 export function todayKey(date: Date = new Date()): string {
   const y = date.getFullYear()
   const m = String(date.getMonth() + 1).padStart(2, '0')
@@ -41,11 +40,38 @@ export function todayKey(date: Date = new Date()): string {
   return `${y}-${m}-${d}`
 }
 
-/** Deterministic set of meals for a given day, shared by every player who opens the game that day. */
-export function getDailyMeals(dateKey: string = todayKey()): Meal[] {
-  const seed = hashStringToSeed(`macroguessr-${dateKey}`)
-  const shuffled = seededShuffle(MEAL_POOL, seed)
-  return shuffled.slice(0, MEALS_PER_DAY)
+const EPOCH = new Date('2024-01-01T00:00:00')
+
+function daysSinceEpoch(dateKey: string): number {
+  const d = new Date(`${dateKey}T00:00:00`)
+  return Math.max(0, Math.round((d.getTime() - EPOCH.getTime()) / 86_400_000))
 }
 
-export { MEALS_PER_DAY }
+// Stable per-tier shuffle order (not date-dependent), so each day just walks
+// forward through it — like a Wordle answer list. Guarantees no repeats
+// within a tier until its whole pool has been used once.
+const tierOrderCache = new Map<Difficulty, Dish[]>()
+function tierOrder(tier: Difficulty): Dish[] {
+  if (!tierOrderCache.has(tier)) {
+    const poolForTier = DISH_POOL.filter((d) => d.difficulty === tier)
+    const seed = hashStringToSeed(`macroguess-tier-${tier}-v1`)
+    tierOrderCache.set(tier, seededShuffle(poolForTier, seed))
+  }
+  return tierOrderCache.get(tier)!
+}
+
+/**
+ * Every player gets the same 5 dishes on a given calendar day: one per
+ * difficulty tier (1 -> 5), so the round always has a warm-up -> boss arc.
+ * If a tier has no dishes yet (e.g. small placeholder pool), it's skipped.
+ */
+export function getDailyDishes(dateKey: string = todayKey()): Dish[] {
+  const dayIndex = daysSinceEpoch(dateKey)
+  const dishes: Dish[] = []
+  for (const tier of DIFFICULTY_TIERS) {
+    const order = tierOrder(tier)
+    if (order.length === 0) continue
+    dishes.push(order[dayIndex % order.length])
+  }
+  return dishes
+}

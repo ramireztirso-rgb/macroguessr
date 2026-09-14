@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local cursor for incremental dish-pool fetching (scripts/fetch-dishes.mjs)
+scripts/.fetch-dishes-progress.json

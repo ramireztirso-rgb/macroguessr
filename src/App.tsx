@@ -1,120 +1,151 @@
 import { useMemo, useState } from 'react'
-import { MealCard } from './components/MealCard'
-import { GuessForm } from './components/GuessForm'
-import { RevealPanel } from './components/RevealPanel'
+import { DishPhoto } from './components/DishPhoto'
+import { GuessControls } from './components/GuessControls'
+import { RevealScreen } from './components/RevealScreen'
 import { ProgressDots } from './components/ProgressDots'
-import { SummaryScreen } from './components/SummaryScreen'
-import { getDailyMeals, todayKey } from './lib/daily'
-import { getRoastMessage, scoreMeal } from './lib/scoring'
-import { loadStats, loadTodayProgress, recordDayComplete, saveTodayProgress, type GuessRecord } from './lib/storage'
-import { USING_PLACEHOLDER_DATA, type Macros } from './data/meals'
+import { HomeScreen } from './components/HomeScreen'
+import { ResultsScreen } from './components/ResultsScreen'
+import { ProfileScreen } from './components/ProfileScreen'
+import { getDailyDishes, todayKey } from './lib/daily'
+import { getRoundMessage, scoreRound, type Guess } from './lib/scoring'
+import { loadStats, loadTodayProgress, recordDayComplete, saveTodayProgress, type RoundRecord } from './lib/storage'
+import { USING_PLACEHOLDER_DATA } from './data/dishPool'
 
-const EMPTY_GUESS: Macros = { calories: 500, protein: 20, carbs: 40, fat: 15, fiber: 5 }
+const DEFAULT_GUESS: Guess = { calories: 500, protein: 25 }
 
-type Phase = 'guessing' | 'revealed' | 'summary'
+type View = 'home' | 'game' | 'results' | 'profile'
+type GamePhase = 'guessing' | 'revealed'
 
 function App() {
   const dateKey = useMemo(() => todayKey(), [])
-  const meals = useMemo(() => getDailyMeals(dateKey), [dateKey])
+  const dishes = useMemo(() => getDailyDishes(dateKey), [dateKey])
 
   const [stats, setStats] = useState(() => loadStats())
-  const [guesses, setGuesses] = useState<GuessRecord[]>(() => loadTodayProgress(dateKey))
-  const [mealIndex, setMealIndex] = useState(() => {
-    const saved = loadTodayProgress(dateKey)
-    return Math.min(saved.length, meals.length)
-  })
-  const [phase, setPhase] = useState<Phase>(() => {
-    const saved = loadTodayProgress(dateKey)
-    return saved.length >= meals.length ? 'summary' : 'guessing'
-  })
-  const [currentGuess, setCurrentGuess] = useState<Macros>(EMPTY_GUESS)
+  const [rounds, setRounds] = useState<RoundRecord[]>(() => loadTodayProgress(dateKey))
+  const alreadyPlayedToday = rounds.length >= dishes.length && dishes.length > 0
+
+  const [view, setView] = useState<View>('home')
+  const [roundIndex, setRoundIndex] = useState(() => Math.min(loadTodayProgress(dateKey).length, dishes.length))
+  const [gamePhase, setGamePhase] = useState<GamePhase>('guessing')
+  const [currentGuess, setCurrentGuess] = useState<Guess>(DEFAULT_GUESS)
   const [message, setMessage] = useState('')
 
-  const currentMeal = meals[mealIndex]
+  const currentDish = dishes[roundIndex]
+  const lastRound = rounds[rounds.length - 1]
+
+  const startGame = () => {
+    if (alreadyPlayedToday) {
+      setView('results')
+      return
+    }
+    setRoundIndex(rounds.length)
+    setCurrentGuess(DEFAULT_GUESS)
+    setGamePhase('guessing')
+    setView('game')
+  }
 
   const handleSubmitGuess = () => {
-    if (!currentMeal) return
-    const score = scoreMeal(currentGuess, currentMeal.macros)
-    const record: GuessRecord = { mealId: currentMeal.id, guess: currentGuess, total: score.total }
-    const nextGuesses = [...guesses, record]
-    setGuesses(nextGuesses)
-    saveTodayProgress(dateKey, nextGuesses)
-    setMessage(getRoastMessage(score.total))
-    setPhase('revealed')
+    if (!currentDish) return
+    const score = scoreRound(currentGuess, currentDish.macros)
+    const record: RoundRecord = {
+      dishId: currentDish.id,
+      dishName: currentDish.name,
+      cuisine: currentDish.cuisine,
+      difficulty: currentDish.difficulty,
+      guess: currentGuess,
+      actual: { calories: currentDish.macros.calories, protein: currentDish.macros.protein },
+      calorieErrorPct: score.calorieErrorPct,
+      proteinErrorPct: score.proteinErrorPct,
+      total: score.total,
+    }
+    const nextRounds = [...rounds, record]
+    setRounds(nextRounds)
+    saveTodayProgress(dateKey, nextRounds)
+    setMessage(getRoundMessage(score.total))
+    setGamePhase('revealed')
   }
 
   const handleNext = () => {
-    const isLast = mealIndex >= meals.length - 1
+    const isLast = roundIndex >= dishes.length - 1
     if (isLast) {
-      const finalStats = recordDayComplete(dateKey, guesses)
+      const finalStats = recordDayComplete(dateKey, rounds)
       setStats(finalStats)
-      setPhase('summary')
+      setView('results')
     } else {
-      setMealIndex((i) => i + 1)
-      setCurrentGuess(EMPTY_GUESS)
-      setPhase('guessing')
+      setRoundIndex((i) => i + 1)
+      setCurrentGuess(DEFAULT_GUESS)
+      setGamePhase('guessing')
     }
   }
 
-  const lastScore = guesses[guesses.length - 1]
+  const lastScore = lastRound
+    ? scoreRound(lastRound.guess, lastRound.actual)
+    : null
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-md flex-col gap-6 px-4 py-8">
-      <header className="text-center">
-        <h1 className="text-3xl font-black tracking-tight text-white">
-          Macro<span className="text-emerald-400">Guessr</span>
-        </h1>
-        <p className="mt-1 text-sm text-gray-400">Guess the macros. Get closer, score higher. No shade if you're off.</p>
-      </header>
+    <div className="mx-auto flex min-h-screen max-w-md flex-col gap-6 px-4 py-6">
+      {view !== 'game' && (
+        <header className="flex items-center justify-between">
+          <button onClick={() => setView('home')} className="text-lg font-black tracking-tight text-white">
+            Macro<span className="text-emerald-400">Guess</span>
+          </button>
+          <nav className="flex gap-2 text-sm">
+            <button
+              onClick={() => setView('home')}
+              className={`rounded-full px-3 py-1 ${view === 'home' ? 'bg-white text-black' : 'text-gray-400'}`}
+            >
+              Home
+            </button>
+            <button
+              onClick={() => setView('profile')}
+              className={`rounded-full px-3 py-1 ${view === 'profile' ? 'bg-white text-black' : 'text-gray-400'}`}
+            >
+              Profile
+            </button>
+          </nav>
+        </header>
+      )}
 
-      {phase !== 'summary' && <ProgressDots total={meals.length} current={mealIndex} />}
+      {view === 'home' && (
+        <HomeScreen
+          stats={stats}
+          alreadyPlayedToday={alreadyPlayedToday}
+          todayScore={rounds.reduce((s, r) => s + r.total, 0)}
+          onPlay={startGame}
+          onViewResults={() => setView('results')}
+        />
+      )}
 
-      {phase === 'guessing' && currentMeal && (
+      {view === 'game' && currentDish && (
         <>
-          <MealCard meal={currentMeal} />
-          <GuessForm guess={currentGuess} onChange={setCurrentGuess} onSubmit={handleSubmitGuess} />
+          <ProgressDots total={dishes.length} current={roundIndex} />
+          <DishPhoto dish={currentDish} />
+          {gamePhase === 'guessing' && (
+            <GuessControls guess={currentGuess} onChange={setCurrentGuess} onSubmit={handleSubmitGuess} />
+          )}
+          {gamePhase === 'revealed' && lastRound && lastScore && (
+            <RevealScreen
+              dish={currentDish}
+              guess={lastRound.guess}
+              score={lastScore}
+              message={message}
+              isLastRound={roundIndex >= dishes.length - 1}
+              onNext={handleNext}
+            />
+          )}
         </>
       )}
 
-      {phase === 'revealed' && currentMeal && lastScore && (
-        <>
-          <MealCard meal={currentMeal} />
-          <RevealPanel
-            meal={currentMeal}
-            guess={lastScore.guess}
-            score={{
-              total: lastScore.total,
-              perMacro: scoreMeal(lastScore.guess, currentMeal.macros).perMacro,
-            }}
-            message={message}
-            isLastMeal={mealIndex >= meals.length - 1}
-            onNext={handleNext}
-          />
-        </>
-      )}
+      {view === 'results' && <ResultsScreen dateKey={dateKey} rounds={rounds} stats={stats} />}
 
-      {phase === 'summary' && <SummaryScreen dateKey={dateKey} guesses={guesses} stats={stats} />}
+      {view === 'profile' && <ProfileScreen stats={stats} />}
 
-      {USING_PLACEHOLDER_DATA && (
+      {USING_PLACEHOLDER_DATA && view === 'home' && (
         <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-center text-xs text-amber-300">
-          Running on illustrated placeholder meals — real photos + verified nutrition haven't been loaded yet
-          (run <code className="rounded bg-black/30 px-1">scripts/fetch-meals.mjs</code>).
+          Running on a small placeholder pool — run <code className="rounded bg-black/30 px-1">scripts/fetch-dishes.mjs</code>{' '}
+          to load real photographed dishes.
         </p>
       )}
-
-      <footer className="mt-auto flex flex-col items-center gap-1 pt-4 text-center text-xs text-gray-600">
-        <span>New meals every day at midnight, your time.</span>
-        {!USING_PLACEHOLDER_DATA && (
-          <a
-            href="https://spoonacular.com/food-api"
-            target="_blank"
-            rel="noreferrer"
-            className="text-gray-500 underline hover:text-gray-400"
-          >
-            Recipe data & photos powered by Spoonacular
-          </a>
-        )}
-      </footer>
     </div>
   )
 }

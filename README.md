@@ -1,51 +1,69 @@
-# MacroGuessr
+# MacroGuess
 
-A daily trivia game: guess the calories, protein, carbs, fat, and fiber of a
-meal. The closer your guess, the higher your score. Get close enough (65+)
-and the recipe unlocks; if you're way off, you get a lighthearted roast
-instead of the recipe — never a real dunk.
-
-Inspired by daily games like Wordle/Worldle: everyone who plays on a given
-calendar day gets the same 5 meals, picked deterministically from a shared
-pool so results are comparable and shareable.
+A daily trivia game: everyone gets the same 5 real dishes each day, and guesses
+calories + protein for each one. Score is based on percent accuracy (closer
+guess = more points), with a deliberate 5-round difficulty curve — warm-up →
+moderate → tricky → deceptive/"gotcha" → boss round. The goal is to build
+"nutrition intuition" through play, not to feel like a calorie tracker.
 
 ## How it works
 
-- `src/data/meals.ts` — the meal pool. Uses `src/data/generatedMeals.json`
-  (real recipe photos + computed nutrition + real recipe links, fetched from
-  Spoonacular — see below) when it's populated, and otherwise falls back to
-  a small illustrated placeholder pool with approximate macros.
-- `scripts/fetch-meals.mjs` — a one-time/occasional build step that calls the
-  Spoonacular API to fetch a curated pool of real recipes and writes them to
-  `src/data/generatedMeals.json`. The app itself never calls Spoonacular at
-  runtime — no API key ships in the client bundle, and no per-player quota
-  is spent.
-- `src/lib/daily.ts` — deterministically picks 5 meals per calendar day from
-  the pool using a seeded shuffle, so the "daily puzzle" is shared across
-  players without needing a backend.
-- `src/lib/scoring.ts` — turns percent error into a 0–100 score per macro
-  (within ~5% = ~perfect, decays to 0 by ~60% error), averages to a meal
-  score, and picks a score-appropriate (never mean) message.
-- `src/lib/storage.ts` — persists today's in-progress guesses and long-term
-  stats (streak, best streak, average score, history) in `localStorage`.
+- `src/data/dish.ts` — the `Dish` type (photo, cuisine, macros, difficulty
+  1-5, a short "why" explanation, a "gotcha" one-liner, tags) plus a small
+  hand-written placeholder pool used only until real data is loaded.
+- `src/data/dishPool.ts` — picks `generatedDishes.json` when it's populated,
+  falling back to the placeholder pool otherwise.
+- `scripts/fetch-dishes.mjs` — pulls real dishes from Spoonacular across ~45
+  hand-picked queries spanning the requested cuisines/archetypes (not a blind
+  random sample), auto-generates the explanation/gotcha copy from each dish's
+  *real* ingredient list and caloric breakdown, and auto-assigns a difficulty
+  tier by ranking every dish's "trickiness" (calorie density vs. how
+  healthy/indulgent it looks, hidden-ingredient density, protein-density
+  surprise) into quintiles. Run-time app never calls Spoonacular — no API key
+  ships in the client bundle, no per-player quota spent.
+- `src/lib/scoring.ts` — the percent-error → points curve
+  (0%→100, 5%→95, 10%→85, 20%→65, 30%→40, 50%→10, →0), applied
+  separately to calories and protein, averaged into a 100-pt round score.
+  5 rounds → 500 max.
+- `src/lib/daily.ts` — every day draws exactly one dish per difficulty tier
+  (1→5), via a stable seeded shuffle per tier (Wordle-style — no repeats
+  until a tier's pool cycles), so every player gets the same 5 dishes with a
+  real difficulty arc.
+- `src/lib/storage.ts` — streak (doesn't require a good score, just playing),
+  history, and derived stats: avg calorie/protein accuracy, per-cuisine
+  performance, and a real computed over/underestimate bias insight from the
+  player's own guess history (not scripted copy).
 
-## Loading real meal data
+## Loading real dish data
 
-1. Get a free API key at [spoonacular.com/food-api](https://spoonacular.com/food-api)
-   (free tier: 150 requests/day, plenty for a one-time fetch).
-2. Run:
-   ```bash
-   SPOONACULAR_API_KEY=your_key_here node scripts/fetch-meals.mjs
-   ```
-   This writes ~45 real recipes (photo, computed nutrition, real recipe
-   link) to `src/data/generatedMeals.json`. Commit that file — it's just
-   URLs + numbers, no binary images or secrets.
-3. Re-run it any time (optionally with `MEAL_COUNT=80` etc.) to refresh or
-   grow the pool. The app automatically prefers this real data over the
-   placeholder pool whenever the file is non-empty.
+Spoonacular's free tier is 150 points/day, which isn't enough to fetch the
+whole query list in one run. The script is resumable:
 
-Until step 2 has been run, the app shows a small in-app notice that it's
-running on illustrated placeholder data.
+```bash
+SPOONACULAR_API_KEY=your_key_here node scripts/fetch-dishes.mjs
+```
+
+It fetches a batch (default 20 queries, `QUERY_COUNT=N` to change), merges
+new dishes into the existing pool, re-ranks the *whole* pool's difficulty
+together, and remembers which queries it already tried in
+`scripts/.fetch-dishes-progress.json` (gitignored, local only) — so if you
+hit the daily quota, just run it again the next day and it picks up where it
+left off. Delete that file to start the query list over.
+
+Commit `src/data/generatedDishes.json` after each run — it's just URLs and
+numbers, no secrets or binary images.
+
+## Deliberate MVP scope / tradeoffs
+
+- **No backend or accounts yet.** The results-screen "leaderboard" is
+  therefore a clearly-labeled *preview*: a percentile estimate against an
+  assumed score distribution, not real friend data. Building a real friends
+  leaderboard needs shared daily puzzle state, accounts, and a friend graph
+  — a real next step, not faked here.
+- **Everything is local** (`localStorage`) — streaks/stats live per-browser,
+  not synced across devices.
+- Dish pool is currently ~17 real dishes (growing via the resumable fetch
+  script above); difficulty tiers will even out further as it grows.
 
 ## Running locally
 
@@ -56,12 +74,9 @@ npm run dev
 
 ## Ideas for next steps
 
-- Grow the meal pool — the daily picker reshuffles the whole pool per day,
-  so more meals means less repetition.
-- Move the daily meal selection to a small backend so the puzzle can be
-  updated/curated without a redeploy, and so stats can sync across devices
-  instead of living only in `localStorage`.
-- Add a "how it's scored" info modal and an archive of past days.
-- Consider filtering/curating the fetched pool (cuisine variety, excluding
-  extreme outlier recipes) rather than taking Spoonacular's random sample
-  as-is.
+- Real accounts + backend: shared daily puzzle source of truth, real friends
+  leaderboard, cross-device stats sync.
+- Grow the dish pool (keep running `fetch-dishes.mjs`, or add more queries).
+- An animated point count-up on the reveal screen for extra juice.
+- A "how scoring works" info modal.
+- Push notifications / reminder for the daily streak.
