@@ -37,7 +37,7 @@ export function HomeScreen({
 }) {
   return (
     <div className="flex w-full flex-col items-center gap-6 text-center">
-      <p className="mt-4 text-lg text-gray-400">5 dishes. 2 minutes. Can you out-guess the plate?</p>
+      <p className="mt-4 text-lg text-gray-400">5 dishes. 2 minutes. Lock in or get cooked.</p>
 
       {!alreadyPlayedToday && dishes.length > 0 && <DishPreviewStrip dishes={dishes} />}
 
