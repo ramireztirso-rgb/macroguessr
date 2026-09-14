@@ -22,35 +22,21 @@ if (!apiKey) {
 }
 
 const QUERIES = [
-  { q: 'cheeseburger', cuisine: 'American' },
-  { q: 'macaroni and cheese', cuisine: 'American' },
-  { q: 'buffalo wings', cuisine: 'American' },
-  { q: 'loaded baked potato', cuisine: 'American' },
-  { q: 'chicken burrito bowl', cuisine: 'Mexican' },
-  { q: 'beef taco', cuisine: 'Mexican' },
-  { q: 'chicken quesadilla', cuisine: 'Mexican' },
-  { q: 'chicken teriyaki', cuisine: 'Japanese' },
-  { q: 'chicken ramen', cuisine: 'Japanese' },
-  { q: 'california roll sushi', cuisine: 'Japanese' },
-  { q: 'bibimbap', cuisine: 'Korean' },
-  { q: 'kimchi fried rice', cuisine: 'Korean' },
-  { q: 'fried rice with chicken', cuisine: 'Chinese' },
-  { q: 'orange chicken', cuisine: 'Chinese' },
-  { q: 'kung pao chicken', cuisine: 'Chinese' },
-  { q: 'pad thai with chicken', cuisine: 'Thai' },
-  { q: 'green curry with chicken', cuisine: 'Thai' },
-  { q: 'chicken tikka masala', cuisine: 'Indian' },
-  { q: 'butter chicken', cuisine: 'Indian' },
-  { q: 'spaghetti with meat sauce', cuisine: 'Italian' },
-  { q: 'cheese pizza', cuisine: 'Italian' },
-  { q: 'lasagna with meat', cuisine: 'Italian' },
-  { q: 'greek salad', cuisine: 'Mediterranean' },
-  { q: 'falafel', cuisine: 'Mediterranean' },
-  { q: 'chocolate cake', cuisine: 'Dessert' },
-  { q: 'cheesecake', cuisine: 'Dessert' },
-  { q: 'pancakes with syrup', cuisine: 'Breakfast' },
-  { q: 'omelet with cheese', cuisine: 'Breakfast' },
-  { q: 'french toast', cuisine: 'Breakfast' },
+  // Desserts
+  { q: 'donut', cuisine: 'Dessert', fdcId: 2708064 }, // Doughnut, chocolate
+  { q: 'chocolate chip cookie', cuisine: 'Dessert' },
+  { q: 'brownie', cuisine: 'Dessert' },
+  { q: 'apple pie', cuisine: 'Dessert' },
+  { q: 'ice cream sundae', cuisine: 'Dessert' },
+  { q: 'cinnamon roll', cuisine: 'Dessert' },
+  { q: 'chocolate cake', cuisine: 'Dessert', fdcId: 2707866 }, // Cake or cupcake, chocolate with chocolate icing, bakery
+  // Drinks
+  { q: 'milkshake', cuisine: 'Drink', fdcId: 2705508 }, // Milk shake, fast food, chocolate
+  { q: 'latte', cuisine: 'Drink' },
+  { q: 'hot chocolate with whipped cream', cuisine: 'Drink' },
+  { q: 'smoothie', cuisine: 'Drink' },
+  { q: 'cola', cuisine: 'Drink', fdcId: 2710541 }, // Soft drink, cola (non-alcoholic)
+  { q: 'orange juice', cuisine: 'Drink' },
 ]
 
 const NUTRIENT_NUMBERS = { calories: '208', protein: '203', fat: '204', carbs: '205' }
@@ -165,10 +151,18 @@ function findNutrientPer100g(foodNutrients, number) {
   return match ? match.amount : 0
 }
 
+// Prefer whichever named portion is closest to a normal single-sitting
+// serving (~150g) instead of just taking the first one FNDDS lists — that
+// first entry is sometimes a whole pie (2000g) or a 1-cubic-inch sample
+// (7g), neither of which anyone would photograph as "the dish".
+const TYPICAL_SERVING_G = 150
 function bestPortion(foodPortions) {
   if (!foodPortions?.length) return null
   const named = foodPortions.filter((p) => p.portionDescription && p.portionDescription !== 'Quantity not specified')
-  const pick = named[0] ?? foodPortions[0]
+  const pool = named.length > 0 ? named : foodPortions
+  const pick = [...pool].sort(
+    (a, b) => Math.abs(a.gramWeight - TYPICAL_SERVING_G) - Math.abs(b.gramWeight - TYPICAL_SERVING_G),
+  )[0]
   return { amount: Math.round(pick.gramWeight), unit: 'g', description: pick.portionDescription }
 }
 
@@ -215,21 +209,27 @@ function buildGotcha(macros, servingSize) {
 
 async function main() {
   const results = []
-  for (const { q, cuisine } of QUERIES) {
+  for (const { q, cuisine, fdcId: forcedFdcId } of QUERIES) {
     await sleep(350) // avoid USDA's burst rate limit (separate from the documented hourly quota)
-    console.log(`Searching USDA: "${q}"...`)
-    const food = await searchFood(q)
-    if (food === 'quota-exhausted') {
-      console.warn('  USDA quota/rate limit hit — stopping.')
-      break
-    }
-    if (!food) {
-      console.warn(`  skip "${q}": no USDA match`)
-      continue
+    let fdcId = forcedFdcId
+    if (!fdcId) {
+      console.log(`Searching USDA: "${q}"...`)
+      const food = await searchFood(q)
+      if (food === 'quota-exhausted') {
+        console.warn('  USDA quota/rate limit hit — stopping.')
+        break
+      }
+      if (!food) {
+        console.warn(`  skip "${q}": no USDA match`)
+        continue
+      }
+      fdcId = food.fdcId
+    } else {
+      console.log(`Fetching USDA fdcId=${fdcId} for "${q}" (manual override)...`)
     }
 
     await sleep(350)
-    const detail = await fetchFoodDetail(food.fdcId)
+    const detail = await fetchFoodDetail(fdcId)
     if (detail === 'quota-exhausted') {
       console.warn('  USDA quota/rate limit hit — stopping.')
       break
