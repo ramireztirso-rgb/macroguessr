@@ -53,12 +53,15 @@ export function RevealPanel({
 
       {unlocked ? (
         <a
-          href={`https://www.google.com/search?q=${encodeURIComponent(meal.recipeQuery)}`}
+          href={meal.recipeUrl ?? `https://www.google.com/search?q=${encodeURIComponent(meal.recipeQuery)}`}
           target="_blank"
           rel="noreferrer"
           className="rounded-xl border border-emerald-400/50 bg-emerald-400/10 px-4 py-3 text-center font-semibold text-emerald-300 transition hover:bg-emerald-400/20"
         >
-          🔓 Recipe unlocked — find it here
+          🔓 Recipe unlocked — {meal.recipeUrl ? 'get the recipe' : 'find it here'}
+          {meal.sourceCredit && (
+            <span className="mt-1 block text-xs font-normal text-emerald-300/70">{meal.sourceCredit}</span>
+          )}
         </a>
       ) : (
         <div className="rounded-xl border border-gray-700 bg-gray-800/40 px-4 py-3 text-center text-sm text-gray-400">

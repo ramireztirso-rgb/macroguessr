@@ -1,3 +1,5 @@
+import generatedMeals from './generatedMeals.json'
+
 export type Macros = {
   calories: number
   protein: number
@@ -10,17 +12,37 @@ export type Meal = {
   id: string
   name: string
   description: string
-  emoji: string
   cuisine: string
-  gradient: string
   macros: Macros
   recipeQuery: string
+  /** Real recipe photo. When absent, MealCard falls back to the emoji/gradient placeholder look. */
+  imageUrl?: string
+  /** Real, clickable recipe link (e.g. from Spoonacular). When absent, the recipe unlock falls back to a search link. */
+  recipeUrl?: string
+  /** Attribution text required by the data source (e.g. "Recipe via Spoonacular"). */
+  sourceCredit?: string
+  emoji?: string
+  gradient?: string
 }
 
-// Approximate macros for a single typical serving. This is a small starter
-// pool meant to be swapped out / expanded with real photographed meals and
-// verified nutrition data later (see README).
-export const MEAL_POOL: Meal[] = [
+type GeneratedMeal = {
+  id: string
+  name: string
+  description: string
+  cuisine: string
+  macros: Macros
+  recipeQuery: string
+  imageUrl: string
+  recipeUrl: string
+  sourceCredit: string
+}
+
+const generated = generatedMeals as GeneratedMeal[]
+
+// Small illustrated pool used only until a real data source (see
+// scripts/fetch-meals.mjs) has been run to populate generatedMeals.json.
+// Macros here are approximate/illustrative, not verified nutrition data.
+const PLACEHOLDER_MEAL_POOL: Meal[] = [
   {
     id: 'chicken-burrito-bowl',
     name: 'Chicken Burrito Bowl',
@@ -202,3 +224,11 @@ export const MEAL_POOL: Meal[] = [
     recipeQuery: 'egg fried rice recipe',
   },
 ]
+
+/**
+ * Real meal pool once scripts/fetch-meals.mjs has populated generatedMeals.json;
+ * falls back to the illustrated placeholder pool until then.
+ */
+export const MEAL_POOL: Meal[] = generated.length > 0 ? generated : PLACEHOLDER_MEAL_POOL
+
+export const USING_PLACEHOLDER_DATA = generated.length === 0

@@ -7,7 +7,7 @@ import { SummaryScreen } from './components/SummaryScreen'
 import { getDailyMeals, todayKey } from './lib/daily'
 import { getRoastMessage, scoreMeal } from './lib/scoring'
 import { loadStats, loadTodayProgress, recordDayComplete, saveTodayProgress, type GuessRecord } from './lib/storage'
-import type { Macros } from './data/meals'
+import { USING_PLACEHOLDER_DATA, type Macros } from './data/meals'
 
 const EMPTY_GUESS: Macros = { calories: 500, protein: 20, carbs: 40, fat: 15, fiber: 5 }
 
@@ -95,8 +95,25 @@ function App() {
 
       {phase === 'summary' && <SummaryScreen dateKey={dateKey} guesses={guesses} stats={stats} />}
 
-      <footer className="mt-auto pt-4 text-center text-xs text-gray-600">
-        New meals every day at midnight, your time.
+      {USING_PLACEHOLDER_DATA && (
+        <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-center text-xs text-amber-300">
+          Running on illustrated placeholder meals — real photos + verified nutrition haven't been loaded yet
+          (run <code className="rounded bg-black/30 px-1">scripts/fetch-meals.mjs</code>).
+        </p>
+      )}
+
+      <footer className="mt-auto flex flex-col items-center gap-1 pt-4 text-center text-xs text-gray-600">
+        <span>New meals every day at midnight, your time.</span>
+        {!USING_PLACEHOLDER_DATA && (
+          <a
+            href="https://spoonacular.com/food-api"
+            target="_blank"
+            rel="noreferrer"
+            className="text-gray-500 underline hover:text-gray-400"
+          >
+            Recipe data & photos powered by Spoonacular
+          </a>
+        )}
       </footer>
     </div>
   )
