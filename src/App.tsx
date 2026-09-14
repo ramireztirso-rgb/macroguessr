@@ -1,20 +1,26 @@
 import { useMemo, useState } from 'react'
 import { DishPhoto } from './components/DishPhoto'
-import { GuessControls } from './components/GuessControls'
+import { RoundSlider } from './components/RoundSlider'
 import { RevealScreen } from './components/RevealScreen'
 import { ProgressDots } from './components/ProgressDots'
 import { HomeScreen } from './components/HomeScreen'
 import { ResultsScreen } from './components/ResultsScreen'
 import { ProfileScreen } from './components/ProfileScreen'
 import { getDailyDishes, todayKey } from './lib/daily'
-import { GOOD_ROUND_THRESHOLD, getRoundMessage, scoreRound, type Guess } from './lib/scoring'
+import { CALORIE_MAX, GOOD_ROUND_THRESHOLD, PROTEIN_MAX, getRoundMessage, scoreRound, type Guess } from './lib/scoring'
 import { loadStats, loadTodayProgress, recordDayComplete, saveTodayProgress, type RoundRecord } from './lib/storage'
 import { primeAudio } from './lib/sound'
 import { USING_PLACEHOLDER_DATA } from './data/dishPool'
 import { SoundToggle } from './components/SoundToggle'
 
 const DEFAULT_GUESS: Guess = { calories: 500, protein: 25 }
-const SUBMIT_ANTICIPATION_MS = 550
+
+const CALORIE_STEP = 10
+const CALORIE_NUDGE = 25
+const PROTEIN_STEP = 1
+const PROTEIN_NUDGE = 5
+const CALORIE_COLOR = '#fbbf24'
+const PROTEIN_COLOR = '#34d399'
 
 /** Trailing count of consecutive "good" rounds ending at the most recent one — the in-game hot streak. */
 function trailingHotStreak(rounds: RoundRecord[]): number {
@@ -27,7 +33,7 @@ function trailingHotStreak(rounds: RoundRecord[]): number {
 }
 
 type View = 'home' | 'game' | 'results' | 'profile'
-type GamePhase = 'guessing' | 'submitting' | 'revealed'
+type GamePhase = 'guessing' | 'revealed'
 
 function App() {
   const dateKey = useMemo(() => todayKey(), [])
@@ -59,27 +65,26 @@ function App() {
 
   const handleSubmitGuess = () => {
     if (!currentDish) return
-    primeAudio() // resume the AudioContext within this click's user-gesture, before the async reveal
-    setGamePhase('submitting')
-    setTimeout(() => {
-      const score = scoreRound(currentGuess, currentDish.macros)
-      const record: RoundRecord = {
-        dishId: currentDish.id,
-        dishName: currentDish.name,
-        cuisine: currentDish.cuisine,
-        difficulty: currentDish.difficulty,
-        guess: currentGuess,
-        actual: { calories: currentDish.macros.calories, protein: currentDish.macros.protein },
-        calorieErrorPct: score.calorieErrorPct,
-        proteinErrorPct: score.proteinErrorPct,
-        total: score.total,
-      }
-      const nextRounds = [...rounds, record]
-      setRounds(nextRounds)
-      saveTodayProgress(dateKey, nextRounds)
-      setMessage(getRoundMessage(score.total))
-      setGamePhase('revealed')
-    }, SUBMIT_ANTICIPATION_MS)
+    primeAudio() // resume the AudioContext within this click's user-gesture
+    const score = scoreRound(currentGuess, currentDish.macros)
+    const record: RoundRecord = {
+      dishId: currentDish.id,
+      dishName: currentDish.name,
+      cuisine: currentDish.cuisine,
+      difficulty: currentDish.difficulty,
+      guess: currentGuess,
+      actual: { calories: currentDish.macros.calories, protein: currentDish.macros.protein },
+      calorieErrorPct: score.calorieErrorPct,
+      proteinErrorPct: score.proteinErrorPct,
+      total: score.total,
+    }
+    const nextRounds = [...rounds, record]
+    setRounds(nextRounds)
+    saveTodayProgress(dateKey, nextRounds)
+    setMessage(getRoundMessage(score.total))
+    // Sliders lock + animate the actual marker into place immediately —
+    // no separate "checking" screen in between.
+    setGamePhase('revealed')
   }
 
   const handleNext = () => {
@@ -95,9 +100,9 @@ function App() {
     }
   }
 
-  const lastScore = lastRound
-    ? scoreRound(lastRound.guess, lastRound.actual)
-    : null
+  const revealed = gamePhase === 'revealed'
+  const lastScore = revealed && lastRound ? scoreRound(lastRound.guess, lastRound.actual) : null
+  const displayedGuess = revealed && lastRound ? lastRound.guess : currentGuess
   const hotStreak = trailingHotStreak(rounds)
 
   return (
@@ -140,23 +145,48 @@ function App() {
         <>
           <ProgressDots total={dishes.length} current={roundIndex} />
           <DishPhoto dish={currentDish} />
-          {gamePhase === 'guessing' && (
-            <GuessControls guess={currentGuess} onChange={setCurrentGuess} onSubmit={handleSubmitGuess} />
-          )}
-          {gamePhase === 'submitting' && (
-            <div className="flex flex-col items-center gap-3 py-10 text-gray-400">
-              <div className="flex gap-1.5">
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-emerald-400 [animation-delay:-0.3s]" />
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-emerald-400 [animation-delay:-0.15s]" />
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-emerald-400" />
-              </div>
-              <p className="text-sm font-medium">Checking your guess...</p>
-            </div>
-          )}
-          {gamePhase === 'revealed' && lastRound && lastScore && (
+
+          <div className="flex flex-col gap-6">
+            <RoundSlider
+              label="Calories"
+              unit="kcal"
+              max={CALORIE_MAX}
+              step={CALORIE_STEP}
+              nudge={CALORIE_NUDGE}
+              color={CALORIE_COLOR}
+              guess={displayedGuess.calories}
+              onChange={(calories) => setCurrentGuess({ ...currentGuess, calories })}
+              disabled={revealed}
+              actual={revealed ? currentDish.macros.calories : undefined}
+              errorPct={lastScore?.calorieErrorPct}
+            />
+            <RoundSlider
+              label="Protein"
+              unit="g"
+              max={PROTEIN_MAX}
+              step={PROTEIN_STEP}
+              nudge={PROTEIN_NUDGE}
+              color={PROTEIN_COLOR}
+              guess={displayedGuess.protein}
+              onChange={(protein) => setCurrentGuess({ ...currentGuess, protein })}
+              disabled={revealed}
+              actual={revealed ? currentDish.macros.protein : undefined}
+              errorPct={lastScore?.proteinErrorPct}
+            />
+
+            {!revealed && (
+              <button
+                onClick={handleSubmitGuess}
+                className="w-full rounded-xl bg-emerald-500 px-4 py-4 text-lg font-bold text-black transition hover:bg-emerald-400 active:scale-[0.99]"
+              >
+                Lock In Guess
+              </button>
+            )}
+          </div>
+
+          {revealed && lastScore && (
             <RevealScreen
               dish={currentDish}
-              guess={lastRound.guess}
               score={lastScore}
               message={message}
               hotStreak={hotStreak}
