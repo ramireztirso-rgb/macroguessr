@@ -52,8 +52,11 @@ export function scoreRound(guess: Guess, actual: Guess): RoundScore {
 
 // Slider ranges shared between GuessControls (input) and the reveal screen's
 // guess-vs-actual track (display), so both use the same scale.
-export const CALORIE_MAX = 2000
-export const PROTEIN_MAX = 120
+// TODO: temporarily lowered for testing with the current small/lighter dish
+// pool (today's max is 897kcal/70g) — bump back up once bigger dishes
+// (3000-cal territory) are in the pool, or a dish could exceed this range.
+export const CALORIE_MAX = 1000
+export const PROTEIN_MAX = 100
 
 export const MAX_ROUND_SCORE = 100
 /** Threshold for a "good" round — used to sync the sound, haptics, and hot-streak tracking. */
