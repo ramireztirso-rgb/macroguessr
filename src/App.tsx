@@ -12,9 +12,10 @@ import { loadStats, loadTodayProgress, recordDayComplete, saveTodayProgress, typ
 import { USING_PLACEHOLDER_DATA } from './data/dishPool'
 
 const DEFAULT_GUESS: Guess = { calories: 500, protein: 25 }
+const SUBMIT_ANTICIPATION_MS = 550
 
 type View = 'home' | 'game' | 'results' | 'profile'
-type GamePhase = 'guessing' | 'revealed'
+type GamePhase = 'guessing' | 'submitting' | 'revealed'
 
 function App() {
   const dateKey = useMemo(() => todayKey(), [])
@@ -46,23 +47,26 @@ function App() {
 
   const handleSubmitGuess = () => {
     if (!currentDish) return
-    const score = scoreRound(currentGuess, currentDish.macros)
-    const record: RoundRecord = {
-      dishId: currentDish.id,
-      dishName: currentDish.name,
-      cuisine: currentDish.cuisine,
-      difficulty: currentDish.difficulty,
-      guess: currentGuess,
-      actual: { calories: currentDish.macros.calories, protein: currentDish.macros.protein },
-      calorieErrorPct: score.calorieErrorPct,
-      proteinErrorPct: score.proteinErrorPct,
-      total: score.total,
-    }
-    const nextRounds = [...rounds, record]
-    setRounds(nextRounds)
-    saveTodayProgress(dateKey, nextRounds)
-    setMessage(getRoundMessage(score.total))
-    setGamePhase('revealed')
+    setGamePhase('submitting')
+    setTimeout(() => {
+      const score = scoreRound(currentGuess, currentDish.macros)
+      const record: RoundRecord = {
+        dishId: currentDish.id,
+        dishName: currentDish.name,
+        cuisine: currentDish.cuisine,
+        difficulty: currentDish.difficulty,
+        guess: currentGuess,
+        actual: { calories: currentDish.macros.calories, protein: currentDish.macros.protein },
+        calorieErrorPct: score.calorieErrorPct,
+        proteinErrorPct: score.proteinErrorPct,
+        total: score.total,
+      }
+      const nextRounds = [...rounds, record]
+      setRounds(nextRounds)
+      saveTodayProgress(dateKey, nextRounds)
+      setMessage(getRoundMessage(score.total))
+      setGamePhase('revealed')
+    }, SUBMIT_ANTICIPATION_MS)
   }
 
   const handleNext = () => {
@@ -109,6 +113,7 @@ function App() {
       {view === 'home' && (
         <HomeScreen
           stats={stats}
+          dishes={dishes}
           alreadyPlayedToday={alreadyPlayedToday}
           todayScore={rounds.reduce((s, r) => s + r.total, 0)}
           onPlay={startGame}
@@ -122,6 +127,16 @@ function App() {
           <DishPhoto dish={currentDish} />
           {gamePhase === 'guessing' && (
             <GuessControls guess={currentGuess} onChange={setCurrentGuess} onSubmit={handleSubmitGuess} />
+          )}
+          {gamePhase === 'submitting' && (
+            <div className="flex flex-col items-center gap-3 py-10 text-gray-400">
+              <div className="flex gap-1.5">
+                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-emerald-400 [animation-delay:-0.3s]" />
+                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-emerald-400 [animation-delay:-0.15s]" />
+                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-emerald-400" />
+              </div>
+              <p className="text-sm font-medium">Checking your guess...</p>
+            </div>
           )}
           {gamePhase === 'revealed' && lastRound && lastScore && (
             <RevealScreen

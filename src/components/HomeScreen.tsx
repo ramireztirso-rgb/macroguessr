@@ -1,15 +1,35 @@
+import type { Dish } from '../data/dish'
 import type { Stats } from '../lib/storage'
 import { getAvgScore } from '../lib/storage'
 import { MAX_DAY_SCORE } from '../lib/scoring'
 
+function DishPreviewStrip({ dishes }: { dishes: Dish[] }) {
+  return (
+    <div className="flex w-full justify-center gap-2">
+      {dishes.map((dish, i) => (
+        <div key={dish.id} className="relative h-16 w-16 overflow-hidden rounded-xl bg-gray-800 shadow">
+          {dish.imageUrl && (
+            <img src={dish.imageUrl} alt="" className="h-full w-full object-cover" loading="lazy" />
+          )}
+          <span className="absolute bottom-0.5 right-0.5 rounded bg-black/60 px-1 text-[10px] font-bold text-white">
+            {i + 1}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function HomeScreen({
   stats,
+  dishes,
   alreadyPlayedToday,
   todayScore,
   onPlay,
   onViewResults,
 }: {
   stats: Stats
+  dishes: Dish[]
   alreadyPlayedToday: boolean
   todayScore: number
   onPlay: () => void
@@ -18,6 +38,8 @@ export function HomeScreen({
   return (
     <div className="flex w-full flex-col items-center gap-6 text-center">
       <p className="mt-4 text-lg text-gray-400">5 dishes. 2 minutes. Can you out-guess the plate?</p>
+
+      {!alreadyPlayedToday && dishes.length > 0 && <DishPreviewStrip dishes={dishes} />}
 
       {stats.currentStreak > 0 && (
         <div className="flex items-center gap-2 rounded-full bg-orange-500/10 px-4 py-2 text-orange-300">
