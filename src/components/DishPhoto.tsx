@@ -16,7 +16,10 @@ function DishImage({ dish }: { dish: Dish }) {
     <img
       src={src}
       alt={dish.name}
-      className="h-full w-full object-cover"
+      // object-contain (not cover) so the photo is never cropped in to fill
+      // the box — cropping was what made dishes feel zoomed-in, especially
+      // Spoonacular's wider ~1.6:1 photos in this 4:3 box.
+      className="h-full w-full object-contain"
       loading="eager"
       onError={() => {
         // The upsized URL doesn't exist for every recipe; fall back to the original size once.
