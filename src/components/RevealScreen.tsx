@@ -1,11 +1,21 @@
 import { useEffect, useState } from 'react'
 import type { Dish } from '../data/dish'
-import { GOOD_ROUND_THRESHOLD, scoreColorClass, type Guess, type RoundScore } from '../lib/scoring'
+import {
+  CALORIE_MAX,
+  GOOD_ROUND_THRESHOLD,
+  PROTEIN_MAX,
+  scoreColorClass,
+  type Guess,
+  type RoundScore,
+} from '../lib/scoring'
 import { useCountUp } from '../lib/useCountUp'
 import { playRoundResultSound } from '../lib/sound'
 import { hapticBad, hapticGood, hapticStreak } from '../lib/haptics'
+import { GuessActualBar } from './GuessActualBar'
 
 const EXCELLENT_THRESHOLD = 85
+const CALORIE_COLOR = '#fbbf24'
+const PROTEIN_COLOR = '#34d399'
 
 // Staged reveal, GeoGuessr/Worldle-style: show the guess-vs-actual numbers
 // first, THEN converge the score (with sound), THEN the explanation — instead
@@ -15,43 +25,6 @@ const NUMBERS_DELAY_MS = 1400
 const SCORE_TO_EXPLANATION_MS = 1100
 
 type Stage = 'numbers' | 'score' | 'full'
-
-function StatCompare({
-  label,
-  guess,
-  actual,
-  unit,
-  errorPct,
-}: {
-  label: string
-  guess: number
-  actual: number
-  unit: string
-  errorPct: number
-}) {
-  return (
-    <div className="rounded-xl bg-gray-800/60 p-3">
-      <p className="text-xs font-medium text-gray-400">{label}</p>
-      <div className="mt-1 flex items-baseline justify-between">
-        <div>
-          <p className="text-xs text-gray-500">You guessed</p>
-          <p className="text-xl font-bold text-gray-300">
-            {guess}
-            {unit}
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs text-gray-500">Actual</p>
-          <p className="text-xl font-bold text-emerald-400">
-            {actual}
-            {unit}
-          </p>
-        </div>
-      </div>
-      <p className="mt-1 text-right text-xs text-gray-500">{Math.round(errorPct * 100)}% off</p>
-    </div>
-  )
-}
 
 export function RevealScreen({
   dish,
@@ -138,19 +111,23 @@ export function RevealScreen({
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <StatCompare
+      <div className="flex flex-col gap-3">
+        <GuessActualBar
           label="Calories"
           guess={guess.calories}
           actual={dish.macros.calories}
+          max={CALORIE_MAX}
           unit=""
+          accentColor={CALORIE_COLOR}
           errorPct={score.calorieErrorPct}
         />
-        <StatCompare
+        <GuessActualBar
           label="Protein"
           guess={guess.protein}
           actual={dish.macros.protein}
+          max={PROTEIN_MAX}
           unit="g"
+          accentColor={PROTEIN_COLOR}
           errorPct={score.proteinErrorPct}
         />
       </div>

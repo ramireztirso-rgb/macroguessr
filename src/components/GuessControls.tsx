@@ -1,9 +1,7 @@
-import type { Guess } from '../lib/scoring'
+import { CALORIE_MAX, PROTEIN_MAX, type Guess } from '../lib/scoring'
 
-const CALORIE_MAX = 2000
 const CALORIE_STEP = 10
 const CALORIE_NUDGE = 25
-const PROTEIN_MAX = 120
 const PROTEIN_STEP = 1
 const PROTEIN_NUDGE = 5
 

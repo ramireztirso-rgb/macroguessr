@@ -50,6 +50,11 @@ export function scoreRound(guess: Guess, actual: Guess): RoundScore {
   return { calorieErrorPct, proteinErrorPct, calorieScore, proteinScore, total, combinedErrorPct }
 }
 
+// Slider ranges shared between GuessControls (input) and the reveal screen's
+// guess-vs-actual track (display), so both use the same scale.
+export const CALORIE_MAX = 2000
+export const PROTEIN_MAX = 120
+
 export const MAX_ROUND_SCORE = 100
 /** Threshold for a "good" round — used to sync the sound, haptics, and hot-streak tracking. */
 export const GOOD_ROUND_THRESHOLD = 65
