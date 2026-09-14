@@ -29,10 +29,12 @@ function estimatedPercentile(score: number): number {
   return Math.round(cdf * 100)
 }
 
+const GAME_URL = 'https://ramireztirso-rgb.github.io/macroguessr/'
+
 function buildShareText(dateKey: string, rounds: RoundRecord[], totalScore: number, streak: number): string {
   const grid = rounds.map((r) => scoreEmoji(r.total)).join(' ')
   const streakLine = streak > 0 ? `\n🔥 ${streak} day streak` : ''
-  return `MACRO GUESS — ${dateKey}\n${totalScore}/${MAX_DAY_SCORE}\n${grid}${streakLine}\n#MacroGuess`
+  return `MACRO GUESS — ${dateKey}\n${totalScore}/${MAX_DAY_SCORE}\n${grid}${streakLine}\n${GAME_URL}`
 }
 
 export function ResultsScreen({
