@@ -84,11 +84,8 @@ const ENCOURAGEMENT_LOW = [
   "Bro... you gotta lock tf in. 🔒",
   "Nah that guess was NOT it, chief.",
   "We are not gonna talk about that one.",
-  "That's an L, but a rebuild-era L. Run it back.",
   "Chat, this guess is not going well.",
-  "Ok pretend that didn't happen. Next dish.",
   "Bro thought the sauce was a garnish.",
-  "Respectfully... what was that.",
   "Big whiff energy right there.",
   "The dish said 'not even close' and walked away.",
   "That guess had no business being that far off.",
@@ -130,8 +127,6 @@ const COLD_STREAK_3_PLUS = [
   "Three in a row?? Put the phone down and eat a vegetable.",
   "Ok we need an intervention.",
   "You are NOT locked in rn, chief.",
-  "Sir. This is concerning. Please regroup.",
-  "At this point the dish is winning on purpose.",
 ]
 
 /**
