@@ -7,7 +7,7 @@ import { HomeScreen } from './components/HomeScreen'
 import { ResultsScreen } from './components/ResultsScreen'
 import { ProfileScreen } from './components/ProfileScreen'
 import { getDailyDishes, todayKey } from './lib/daily'
-import { getRoundMessage, scoreRound, type Guess } from './lib/scoring'
+import { GOOD_ROUND_THRESHOLD, getRoundMessage, scoreRound, type Guess } from './lib/scoring'
 import { loadStats, loadTodayProgress, recordDayComplete, saveTodayProgress, type RoundRecord } from './lib/storage'
 import { primeAudio } from './lib/sound'
 import { USING_PLACEHOLDER_DATA } from './data/dishPool'
@@ -15,6 +15,16 @@ import { SoundToggle } from './components/SoundToggle'
 
 const DEFAULT_GUESS: Guess = { calories: 500, protein: 25 }
 const SUBMIT_ANTICIPATION_MS = 550
+
+/** Trailing count of consecutive "good" rounds ending at the most recent one — the in-game hot streak. */
+function trailingHotStreak(rounds: RoundRecord[]): number {
+  let count = 0
+  for (let i = rounds.length - 1; i >= 0; i--) {
+    if (rounds[i].total >= GOOD_ROUND_THRESHOLD) count++
+    else break
+  }
+  return count
+}
 
 type View = 'home' | 'game' | 'results' | 'profile'
 type GamePhase = 'guessing' | 'submitting' | 'revealed'
@@ -88,6 +98,7 @@ function App() {
   const lastScore = lastRound
     ? scoreRound(lastRound.guess, lastRound.actual)
     : null
+  const hotStreak = trailingHotStreak(rounds)
 
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col gap-6 px-4 py-6">
@@ -148,6 +159,7 @@ function App() {
               guess={lastRound.guess}
               score={lastScore}
               message={message}
+              hotStreak={hotStreak}
               isLastRound={roundIndex >= dishes.length - 1}
               onNext={handleNext}
             />

@@ -1,3 +1,5 @@
+import { GOOD_ROUND_THRESHOLD } from './scoring'
+
 const STORAGE_KEY = 'macroguess:sound'
 
 export function isSoundEnabled(): boolean {
@@ -57,6 +59,6 @@ function playBadTone() {
 /** Plays a subtle good/bad sound based on the round score (0-100 scale). No-ops if sound is muted. */
 export function playRoundResultSound(roundTotal: number) {
   if (!isSoundEnabled()) return
-  if (roundTotal >= 65) playGoodChime()
+  if (roundTotal >= GOOD_ROUND_THRESHOLD) playGoodChime()
   else playBadTone()
 }

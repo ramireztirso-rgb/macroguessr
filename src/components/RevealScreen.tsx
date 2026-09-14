@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import type { Dish } from '../data/dish'
-import type { Guess, RoundScore } from '../lib/scoring'
+import { GOOD_ROUND_THRESHOLD, type Guess, type RoundScore } from '../lib/scoring'
 import { useCountUp } from '../lib/useCountUp'
 import { playRoundResultSound } from '../lib/sound'
+import { hapticBad, hapticGood, hapticStreak } from '../lib/haptics'
+
+const EXCELLENT_THRESHOLD = 85
 
 // Staged reveal, GeoGuessr/Worldle-style: show the guess-vs-actual numbers
 // first, THEN converge the score (with sound), THEN the explanation — instead
@@ -54,6 +57,7 @@ export function RevealScreen({
   guess,
   score,
   message,
+  hotStreak,
   isLastRound,
   onNext,
 }: {
@@ -61,6 +65,7 @@ export function RevealScreen({
   guess: Guess
   score: RoundScore
   message: string
+  hotStreak: number
   isLastRound: boolean
   onNext: () => void
 }) {
@@ -68,12 +73,17 @@ export function RevealScreen({
   const animatedPoints = useCountUp(stage === 'numbers' ? 0 : score.total, 700)
   const landed = stage !== 'numbers' && animatedPoints >= score.total
   const [popped, setPopped] = useState(false)
+  const isExcellent = score.total >= EXCELLENT_THRESHOLD
+  const onFire = hotStreak >= 2
 
   useEffect(() => {
     setStage('numbers')
     const toScore = setTimeout(() => {
       setStage('score')
       playRoundResultSound(score.total)
+      if (score.total < GOOD_ROUND_THRESHOLD) hapticBad()
+      else if (onFire) hapticStreak()
+      else hapticGood()
     }, NUMBERS_DELAY_MS)
     const toFull = setTimeout(() => setStage('full'), NUMBERS_DELAY_MS + SCORE_TO_EXPLANATION_MS)
     return () => {
@@ -93,11 +103,20 @@ export function RevealScreen({
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="rounded-xl bg-gray-800/60 p-4 text-center">
+      <div
+        className={`rounded-xl bg-gray-800/60 p-4 text-center transition-shadow duration-300 ${
+          stage !== 'numbers' && isExcellent ? 'ring-1 ring-emerald-400/50 shadow-[0_0_28px_-6px_rgba(52,211,153,0.7)]' : ''
+        }`}
+      >
         {stage === 'numbers' ? (
           <p className="text-sm text-gray-500">Comparing your guess...</p>
         ) : (
           <>
+            {onFire && (
+              <p className="reveal-fade-in mb-1 text-sm font-bold text-orange-400">
+                🔥 {hotStreak} in a row!
+              </p>
+            )}
             <p className="text-sm text-gray-400">You were {Math.round(score.combinedErrorPct * 100)}% off</p>
             <p
               className={`mt-1 text-4xl font-black tabular-nums text-emerald-400 transition-transform duration-200 ${

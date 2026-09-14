@@ -51,6 +51,8 @@ export function scoreRound(guess: Guess, actual: Guess): RoundScore {
 }
 
 export const MAX_ROUND_SCORE = 100
+/** Threshold for a "good" round — used to sync the sound, haptics, and hot-streak tracking. */
+export const GOOD_ROUND_THRESHOLD = 65
 export const ROUNDS_PER_DAY = 5
 export const MAX_DAY_SCORE = MAX_ROUND_SCORE * ROUNDS_PER_DAY
 
