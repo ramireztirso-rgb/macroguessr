@@ -4,9 +4,26 @@ import {
   getAvgScore,
   getBiasInsight,
   getCuisinePerformance,
+  resetAllLocalData,
   type Stats,
 } from '../lib/storage'
 import { MAX_DAY_SCORE } from '../lib/scoring'
+
+function ResetDataLink() {
+  return (
+    <button
+      onClick={() => {
+        if (confirm('Reset all local stats and progress? This clears your streak, history, and today\'s game.')) {
+          resetAllLocalData()
+          window.location.reload()
+        }
+      }}
+      className="text-xs text-gray-600 underline underline-offset-2 hover:text-gray-400"
+    >
+      Reset my data (testing)
+    </button>
+  )
+}
 
 export function ProfileScreen({ stats }: { stats: Stats }) {
   const cuisinePerf = getCuisinePerformance(stats)
@@ -19,6 +36,9 @@ export function ProfileScreen({ stats }: { stats: Stats }) {
       <div className="flex w-full flex-col items-center gap-3 text-center text-gray-400">
         <p className="text-lg font-bold text-white">No games yet</p>
         <p>Play today's game to start building your stats.</p>
+        <div className="mt-4">
+          <ResetDataLink />
+        </div>
       </div>
     )
   }
@@ -69,6 +89,10 @@ export function ProfileScreen({ stats }: { stats: Stats }) {
           )}
         </div>
       )}
+
+      <div className="text-center">
+        <ResetDataLink />
+      </div>
     </div>
   )
 }

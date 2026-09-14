@@ -141,6 +141,17 @@ export function saveTodayProgress(dateKey: string, rounds: RoundRecord[]) {
   localStorage.setItem(PROGRESS_PREFIX + dateKey, JSON.stringify(rounds))
 }
 
+/** Testing-only escape hatch: wipes all local stats + progress so you can replay from scratch. */
+export function resetAllLocalData() {
+  if (typeof localStorage === 'undefined') return
+  const keysToRemove: string[] = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key && (key === STATS_KEY || key.startsWith(PROGRESS_PREFIX))) keysToRemove.push(key)
+  }
+  keysToRemove.forEach((k) => localStorage.removeItem(k))
+}
+
 // --- Derived stats for the profile screen ---
 
 export type CuisinePerformance = { cuisine: string; avgPercent: number; count: number }
