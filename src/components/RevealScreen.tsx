@@ -8,10 +8,10 @@ import { hapticBad, hapticGood, hapticStreak } from '../lib/haptics'
 const EXCELLENT_THRESHOLD = 85
 
 // The sliders themselves animate the actual-value marker into place
-// (~700ms) as soon as you submit, so the score converges right as that
+// (~1800ms) as soon as you submit, so the score converges right as that
 // lands instead of behind a separate loading screen — then the
 // explanation follows a beat after that.
-const SCORE_DELAY_MS = 800
+const SCORE_DELAY_MS = 1900
 const POINTS_COUNT_UP_MS = 1700
 const SCORE_TO_EXPLANATION_MS = 2000 // stays a bit longer than the count-up so it doesn't cut off mid-animation
 

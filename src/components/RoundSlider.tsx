@@ -104,11 +104,11 @@ export function RoundSlider({
           {revealed && (
             <>
               <div
-                className="pointer-events-none absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-gray-400/30 transition-all duration-700 ease-out"
+                className="pointer-events-none absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-gray-400/30 transition-all duration-[1800ms] ease-out"
                 style={{ left: `${gapStart}%`, width: `${gapEnd - gapStart}%` }}
               />
               <div
-                className="pointer-events-none absolute top-1/2 h-[22px] w-[22px] -translate-y-1/2 -translate-x-1/2 rounded-full border-2 shadow transition-all duration-700 ease-out"
+                className="pointer-events-none absolute top-1/2 h-[22px] w-[22px] -translate-y-1/2 -translate-x-1/2 rounded-full border-2 shadow transition-all duration-[1800ms] ease-out"
                 style={{
                   left: `${actualVisible ? actualPct : guessPct}%`,
                   opacity: actualVisible ? 1 : 0,
