@@ -99,11 +99,8 @@ const ENCOURAGEMENT_MID = [
 const ENCOURAGEMENT_HIGH = [
   "Yessir. You're HIM for that one. 🐐",
   "Absolutely locked in, no cap.",
-  "That's diff. You ATE that guess up.",
   "W guess. Certified dawg behavior.",
   "Bro really said 'I know food' and proved it.",
-  "Okay chef, we see you.",
-  "You really are that guy.",
   "Aight big dog we see you.",
   "This dude built different.",
 ]
