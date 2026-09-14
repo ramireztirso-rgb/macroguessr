@@ -112,6 +112,7 @@ const ENCOURAGEMENT_HIGH = [
   "That guess was actually unfair ngl.",
   "Scary accurate. Who taught you that.",
   "Okay chef, we see you.",
+  "You really are that guy.",
 ]
 
 // Escalating roasts for consecutive bad rounds — a "cold streak" mirroring
