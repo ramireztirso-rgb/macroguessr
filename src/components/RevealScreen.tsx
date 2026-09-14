@@ -12,7 +12,8 @@ const EXCELLENT_THRESHOLD = 85
 // lands instead of behind a separate loading screen — then the
 // explanation follows a beat after that.
 const SCORE_DELAY_MS = 800
-const SCORE_TO_EXPLANATION_MS = 1100
+const POINTS_COUNT_UP_MS = 1700
+const SCORE_TO_EXPLANATION_MS = 2000 // stays a bit longer than the count-up so it doesn't cut off mid-animation
 
 type Stage = 'waiting' | 'score' | 'full'
 
@@ -32,7 +33,7 @@ export function RevealScreen({
   onNext: () => void
 }) {
   const [stage, setStage] = useState<Stage>('waiting')
-  const animatedPoints = useCountUp(stage === 'waiting' ? 0 : score.total, 900)
+  const animatedPoints = useCountUp(stage === 'waiting' ? 0 : score.total, POINTS_COUNT_UP_MS)
   const landed = stage !== 'waiting' && animatedPoints >= score.total
   const [popped, setPopped] = useState(false)
   const isExcellent = score.total >= EXCELLENT_THRESHOLD

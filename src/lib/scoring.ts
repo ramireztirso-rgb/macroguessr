@@ -80,12 +80,18 @@ export function scoreColorClass(roundTotal: number): string {
 }
 
 const ENCOURAGEMENT_LOW = [
+  "You good fam? 💀",
   "Bro... you gotta lock tf in. 🔒",
   "Nah that guess was NOT it, chief.",
   "We are not gonna talk about that one.",
   "That's an L, but a rebuild-era L. Run it back.",
   "Chat, this guess is not going well.",
   "Ok pretend that didn't happen. Next dish.",
+  "Bro thought the sauce was a garnish.",
+  "Respectfully... what was that.",
+  "Big whiff energy right there.",
+  "The dish said 'not even close' and walked away.",
+  "That guess had no business being that far off.",
 ]
 const ENCOURAGEMENT_MID = [
   "Aight that's respectable ngl.",
@@ -93,6 +99,8 @@ const ENCOURAGEMENT_MID = [
   "Mid but in a good way. Keep locking in.",
   "You're warming up, big dog.",
   "Solid. Certified in-the-neighborhood behavior.",
+  "Decent radar on that one.",
+  "You're in striking distance, respect.",
 ]
 const ENCOURAGEMENT_HIGH = [
   "Yessir. You're HIM for that one. 🐐",
@@ -100,7 +108,10 @@ const ENCOURAGEMENT_HIGH = [
   "That's diff. You ATE that guess up.",
   "W guess. Certified dawg behavior.",
   "You're built for this fr fr.",
-  "Ok Einstein, chill.",
+  "Bro really said 'I know food' and proved it.",
+  "That guess was actually unfair ngl.",
+  "Scary accurate. Who taught you that.",
+  "Okay chef, we see you.",
 ]
 
 export function getRoundMessage(total: number): string {

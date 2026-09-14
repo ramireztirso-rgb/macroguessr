@@ -30,7 +30,7 @@ export function DishPhoto({ dish }: { dish: Dish }) {
   return (
     <div className="w-full overflow-hidden rounded-2xl shadow-lg">
       <div className="relative aspect-[4/3] w-full bg-gray-800">
-        {dish.imageUrl && <DishImage dish={dish} />}
+        {dish.imageUrl && <DishImage key={dish.id} dish={dish} />}
         <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
           <span className="rounded-full bg-black/50 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
             {dish.cuisine}
