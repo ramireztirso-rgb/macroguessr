@@ -114,7 +114,36 @@ const ENCOURAGEMENT_HIGH = [
   "Okay chef, we see you.",
 ]
 
-export function getRoundMessage(total: number): string {
-  const pool = total >= 80 ? ENCOURAGEMENT_HIGH : total >= 50 ? ENCOURAGEMENT_MID : ENCOURAGEMENT_LOW
+// Escalating roasts for consecutive bad rounds — a "cold streak" mirroring
+// the hot-streak flame, but for whiffs.
+const COLD_STREAK_2 = [
+  "Bro TWO in a row? We gotta talk.",
+  "This is becoming a pattern ngl.",
+  "Ok now I'm a little concerned.",
+  "Two Ls back to back. Lock in fr.",
+  "Back-to-back whiffs. Rough.",
+]
+const COLD_STREAK_3_PLUS = [
+  "Bro you down BAD. 💀",
+  "This is a cry for help at this point.",
+  "Three in a row?? Put the phone down and eat a vegetable.",
+  "Ok we need an intervention.",
+  "You are NOT locked in rn, chief.",
+  "Sir. This is concerning. Please regroup.",
+  "At this point the dish is winning on purpose.",
+]
+
+/**
+ * `coldStreak` = consecutive bad rounds ending at and including this one
+ * (1 = first bad guess, 2 = second in a row, 3+ = full spiral). Only
+ * affects the message when the round itself was bad — a good round always
+ * gets a normal high/mid message regardless of what came before it.
+ */
+export function getRoundMessage(total: number, coldStreak = 0): string {
+  if (total < 50) {
+    const pool = coldStreak >= 3 ? COLD_STREAK_3_PLUS : coldStreak === 2 ? COLD_STREAK_2 : ENCOURAGEMENT_LOW
+    return pool[Math.floor(Math.random() * pool.length)]
+  }
+  const pool = total >= 80 ? ENCOURAGEMENT_HIGH : ENCOURAGEMENT_MID
   return pool[Math.floor(Math.random() * pool.length)]
 }

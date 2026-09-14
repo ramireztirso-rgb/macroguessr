@@ -33,6 +33,16 @@ function trailingHotStreak(rounds: RoundRecord[]): number {
   return count
 }
 
+/** Trailing count of consecutive bad (<50) rounds ending at the most recent one — for escalating roast lines. */
+function trailingColdStreak(rounds: RoundRecord[]): number {
+  let count = 0
+  for (let i = rounds.length - 1; i >= 0; i--) {
+    if (rounds[i].total < 50) count++
+    else break
+  }
+  return count
+}
+
 type View = 'home' | 'game' | 'results' | 'profile'
 type GamePhase = 'guessing' | 'thinking' | 'revealed'
 
@@ -87,7 +97,7 @@ function App() {
       const nextRounds = [...rounds, record]
       setRounds(nextRounds)
       saveTodayProgress(dateKey, nextRounds)
-      setMessage(getRoundMessage(score.total))
+      setMessage(getRoundMessage(score.total, trailingColdStreak(nextRounds)))
       setGamePhase('revealed')
     }, THINKING_MS)
   }
