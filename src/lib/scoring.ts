@@ -122,7 +122,7 @@ const COLD_STREAK_3_PLUS = [
  * gets a normal high/mid message regardless of what came before it.
  */
 export function getRoundMessage(total: number, coldStreak = 0): string {
-  if (total < 50) {
+  if (total <= 50) {
     const pool = coldStreak >= 3 ? COLD_STREAK_3_PLUS : coldStreak === 2 ? COLD_STREAK_2 : ENCOURAGEMENT_LOW
     return pool[Math.floor(Math.random() * pool.length)]
   }
