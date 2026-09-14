@@ -87,34 +87,21 @@ export function scoreColorClass(roundTotal: number): string {
 const ENCOURAGEMENT_LOW = [
   "You good fam? 💀",
   "Bro... you gotta lock tf in. 🔒",
-  "Nah that guess was NOT it, chief.",
-  "We are not gonna talk about that one.",
-  "Chat, this guess is not going well.",
   "Bro thought the sauce was a garnish.",
-  "Big whiff energy right there.",
-  "The dish said 'not even close' and walked away.",
-  "That guess had no business being that far off.",
 ]
 const ENCOURAGEMENT_MID = [
-  "Aight that's respectable ngl.",
-  "Not bad, not bad. You're cooking a little.",
   "Mid but in a good way. Keep locking in.",
-  "You're warming up, big dog.",
-  "Solid. Certified in-the-neighborhood behavior.",
-  "Decent radar on that one.",
-  "You're in striking distance, respect.",
 ]
 const ENCOURAGEMENT_HIGH = [
   "Yessir. You're HIM for that one. 🐐",
   "Absolutely locked in, no cap.",
   "That's diff. You ATE that guess up.",
   "W guess. Certified dawg behavior.",
-  "You're built for this fr fr.",
   "Bro really said 'I know food' and proved it.",
-  "That guess was actually unfair ngl.",
-  "Scary accurate. Who taught you that.",
   "Okay chef, we see you.",
   "You really are that guy.",
+  "Big dog behavior right there.",
+  "You're built different for that one.",
 ]
 
 // Escalating roasts for consecutive bad rounds — a "cold streak" mirroring
@@ -123,15 +110,10 @@ const COLD_STREAK_2 = [
   "Bro TWO in a row? We gotta talk.",
   "This is becoming a pattern ngl.",
   "Ok now I'm a little concerned.",
-  "Two Ls back to back. Lock in fr.",
-  "Back-to-back whiffs. Rough.",
 ]
 const COLD_STREAK_3_PLUS = [
   "Bro you down BAD. 💀",
-  "This is a cry for help at this point.",
   "Three in a row?? Put the phone down and eat a vegetable.",
-  "Ok we need an intervention.",
-  "You are NOT locked in rn, chief.",
 ]
 
 /**
